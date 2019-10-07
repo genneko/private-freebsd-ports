@@ -1,0 +1,53 @@
+# $FreeBSD$
+
+PORTNAME=	joplin
+DISTVERSIONPREFIX=	v
+DISTVERSION=	1.0.169
+CATEGORIES=	editors
+
+MAINTAINER=	genneko
+COMMENT=	a note taking and to-do application with synchronization capabilities
+
+LICENSE=	MIT
+
+LIB_DEPENDS=	
+BUILD_DEPENDS=	electron:devel/electron4 \
+		node:www/node8 \
+		npm:www/npm-node8 \
+		vips:graphics/vips \
+		rsync:net/rsync
+RUN_DEPENDS=	${LOCALBASE}/bin/electron:devel/electron4
+
+OPTIONS_DEFINE=	PROXY
+PROXY_EXTRA_PATCHES=	${PATCHDIR}/proxy-patches
+
+USES=		pkgconfig python:2.7,build
+USE_GITHUB=	yes
+GH_ACCOUNT=	laurent22
+
+PLIST_SUB=	WRKSRC=${WRKSRC}
+
+SUB_FILES=	joplin-desktop
+
+DESKTOP_ENTRIES="Joplin Desktop(Ports)" "Note-taking application" \
+		"${DATADIR}/Assets/LinuxIcons/16x16.png" \
+		"joplin-desktop" "Office;WordProcessor;" \
+		false
+
+do-build:
+	@cd ${WRKSRC} && npm install && cd Tools && npm install && \
+		cd ../ElectronClient/app && \
+		rsync --delete -a ../../ReactNativeClient/lib/ lib/ && \
+		${LN} -fs /usr/local/bin/python2.7 ${WRKDIR}/python && \
+		export PATH=${WRKDIR}:${PATH} && \
+		${ECHO_MSG} "===>  Switching to root credentials to install node-gyp globally"; \
+		(${SU_CMD} "npm install -g node-gyp" ) && \
+		${ECHO_MSG} "===>  Returning to user credentials" ; \
+		npm install
+
+do-install:
+	@${MKDIR} ${STAGEDIR}${DATADIR}
+	@cd ${WRKSRC} && ${COPYTREE_SHARE} . ${STAGEDIR}${DATADIR}
+	${INSTALL_SCRIPT} ${WRKDIR}/joplin-desktop ${STAGEDIR}${PREFIX}/bin/
+
+.include <bsd.port.mk>
