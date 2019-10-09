@@ -1,0 +1,118 @@
+Index: Makefile
+===================================================================
+--- Makefile	(revision 514118)
++++ Makefile	(working copy)
+@@ -3,7 +3,7 @@
+ 
+ PORTNAME=	Net-Proxy
+ PORTVERSION=	0.13
+-PORTREVISION=	1
++PORTREVISION=	2
+ CATEGORIES=	net perl5
+ MASTER_SITES=	CPAN
+ PKGNAMEPREFIX=	p5-
+@@ -17,4 +17,7 @@
+ USES=		perl5
+ USE_PERL5=	configure
+ 
++BUILD_DEPENDS=	${RUN_DEPENDS}
++RUN_DEPENDS=	security/p5-Authen-Libwrap>=0.23:security/p5-Authen-Libwrap
++
+ .include <bsd.port.mk>
+Index: files/patch-lib_Net_Proxy_Connector.pm
+===================================================================
+--- files/patch-lib_Net_Proxy_Connector.pm	(nonexistent)
++++ files/patch-lib_Net_Proxy_Connector.pm	(working copy)
+@@ -0,0 +1,37 @@
++--- lib/Net/Proxy/Connector.pm.orig	2014-11-02 22:58:47 UTC
+++++ lib/Net/Proxy/Connector.pm
++@@ -5,6 +5,7 @@ use warnings;
++ use Carp;
++ use Scalar::Util qw( refaddr );
++ use Net::Proxy;
+++use Authen::Libwrap qw ( hosts_ctl STRING_UNKNOWN );
++ 
++ my %PROXY_OF;
++ my $BUFFSIZE = 4096;
++@@ -57,6 +58,17 @@ sub new_connection_on {
++         return;
++     }
++ 
+++    # check hosts.allow
+++    if( $self->{progname} ){
+++        my $ok = hosts_ctl($self->{progname}, $sock->peerhostname, $sock->peerhost);
+++        if( $ok ){
+++            Net::Proxy->error(sprintf("Access permitted by libwrap: %s [%s]", $sock->peerhostname, $sock->peerhost));
+++        }else{
+++            Net::Proxy->error(sprintf("Access denied by libwrap: %s [%s]", $sock->peerhostname, $sock->peerhost));
+++            return;
+++        }
+++    }
+++
++     Net::Proxy->set_connector( $sock, $self );
++     Net::Proxy->set_buffer( $sock, '' );
++     Net::Proxy->set_callback( $sock, $self->{hook} ) if $self->{hook};
++@@ -170,7 +182,7 @@ sub raw_write_to {
++ # the most basic possible listen()
++ sub raw_listen {
++     my $self = shift;
++-    my $sock = IO::Socket::INET->new(
+++    my $sock = IO::Socket::IP->new(
++         Listen    => 1,
++         LocalAddr => $self->{host},
++         LocalPort => $self->{port},
+
+Property changes on: files/patch-lib_Net_Proxy_Connector.pm
+___________________________________________________________________
+Added: fbsd:nokeywords
+## -0,0 +1 ##
++yes
+\ No newline at end of property
+Added: svn:eol-style
+## -0,0 +1 ##
++native
+\ No newline at end of property
+Added: svn:mime-type
+## -0,0 +1 ##
++text/plain
+\ No newline at end of property
+Index: files/patch-lib_Net_Proxy_Connector_tcp.pm
+===================================================================
+--- files/patch-lib_Net_Proxy_Connector_tcp.pm	(nonexistent)
++++ files/patch-lib_Net_Proxy_Connector_tcp.pm	(working copy)
+@@ -0,0 +1,20 @@
++--- lib/Net/Proxy/Connector/tcp.pm.orig	2019-10-09 05:32:49 UTC
+++++ lib/Net/Proxy/Connector/tcp.pm
++@@ -2,7 +2,7 @@ package Net::Proxy::Connector::tcp;
++ $Net::Proxy::Connector::tcp::VERSION = '0.13';
++ use strict;
++ use warnings;
++-use IO::Socket::INET;
+++use IO::Socket::IP;
++ 
++ use Net::Proxy::Connector;
++ our @ISA = qw( Net::Proxy::Connector );
++@@ -23,7 +23,7 @@ sub init {
++ # OUT
++ sub connect {
++     my ($self) = @_;
++-    my $sock = IO::Socket::INET->new(
+++    my $sock = IO::Socket::IP->new(
++         PeerAddr  => $self->{host},
++         PeerPort  => $self->{port},
++         Proto     => 'tcp',
+
+Property changes on: files/patch-lib_Net_Proxy_Connector_tcp.pm
+___________________________________________________________________
+Added: fbsd:nokeywords
+## -0,0 +1 ##
++yes
+\ No newline at end of property
+Added: svn:eol-style
+## -0,0 +1 ##
++native
+\ No newline at end of property
+Added: svn:mime-type
+## -0,0 +1 ##
++text/plain
+\ No newline at end of property

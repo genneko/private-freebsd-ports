@@ -1,0 +1,1196 @@
+Index: Makefile
+===================================================================
+--- Makefile	(revision 513478)
++++ Makefile	(working copy)
+@@ -1,10 +1,10 @@
+ # $FreeBSD$
+ 
+ PORTNAME=	omegaT
+-DISTVERSION=	3.6.0
++DISTVERSION=	4.3.0
+ CATEGORIES=	editors java x11
+-MASTER_SITES=	SF/${PORTNAME:tl}/OmegaT%20-%20Standard/OmegaT%20${DISTVERSION}%20update%204/
+-DISTNAME=	OmegaT_${DISTVERSION}_04_Source
++MASTER_SITES=	SF/${PORTNAME:tl}/OmegaT%20-%20Standard/OmegaT%20${DISTVERSION}/
++DISTNAME=	OmegaT_${DISTVERSION}_Without_JRE
+ DIST_SUBDIR=	${PORTNAME}
+ 
+ MAINTAINER=	rodrigo@FreeBSD.org
+@@ -13,36 +13,24 @@
+ LICENSE=	GPLv2
+ 
+ USES=		shebangfix zip
+-SHEBANG_FILES=	release/linux-specific/OmegaT \
+-		release/linux-specific/OmegaT-JRE \
+-		release/linux-specific/omegat.kaptn
+-SHEBANG_LANG=	kaptain
+-kaptain_OLD_CMD=/usr/bin/kaptain
+-kaptain_CMD=	${LOCALBASE}/bin/kaptain
+-USE_ANT=	yes
++SHEBANG_FILES=	OmegaT
++NO_BUILD=	yes
+ USE_JAVA=	yes
+ JAVA_VENDOR=	openjdk
+ JAVA_VERSION=	1.7+
+-JAVA_BUILD=	yes
+ JAVA_RUN=	yes
+-NO_WRKSUBDIR=	yes
+-USE_LDCONFIG=	${DATADIR}/native
+-ALL_TARGET=	release
+ 
+ DATADIR=	${JAVASHAREDIR}/${PORTNAME}
+-SUB_FILES=	omegaT.sh omegat.prefs
++SUB_FILES=	omegaT.sh
+ 
+ DESKTOP_ENTRIES="OmegaT" "Translation memory application" \
+ 		"${DATADIR}/images/OmegaT.png" \
+ 		"omegaT" "Office;WordProcessor;Java;" \
+ 		false
+-post-build:
+-	@cd ${WRKSRC} && ${MV} 'dist' ${PORTNAME}
+ 
+ do-install:
+-	@${MKDIR} ${STAGEDIR}${JAVASHAREDIR}/${PORTNAME}
+-	@cd  ${WRKSRC} && ${COPYTREE_BIN} ${PORTNAME} ${STAGEDIR}${JAVASHAREDIR}
+-	${INSTALL_SCRIPT} ${WRKDIR}/omegat.prefs ${STAGEDIR}${JAVASHAREDIR}/${PORTNAME}
++	@${MKDIR} ${STAGEDIR}${DATADIR}
++	@cd ${WRKSRC} && ${COPYTREE_SHARE} . ${STAGEDIR}${DATADIR}
+ 	${INSTALL_SCRIPT} ${WRKDIR}/omegaT.sh ${STAGEDIR}${PREFIX}/bin/${PORTNAME}
+ 
+ .include <bsd.port.mk>
+Index: distinfo
+===================================================================
+--- distinfo	(revision 513478)
++++ distinfo	(working copy)
+@@ -1,3 +1,3 @@
+-TIMESTAMP = 1484948723
+-SHA256 (omegaT/OmegaT_3.6.0_04_Source.zip) = d020864b43610308058facf7bdafb89d40e8cb32111b8c9922c25a02abdbd876
+-SIZE (omegaT/OmegaT_3.6.0_04_Source.zip) = 109905487
++TIMESTAMP = 1569895791
++SHA256 (omegaT/OmegaT_4.3.0_Without_JRE.zip) = 3aa3a296e953f728410a653753dea8db9f2710b39fbeb61f2c9f8c0b463ebf2b
++SIZE (omegaT/OmegaT_4.3.0_Without_JRE.zip) = 151076835
+Index: files/omegat.prefs.in
+===================================================================
+--- files/omegat.prefs.in	(revision 513478)
++++ files/omegat.prefs.in	(nonexistent)
+@@ -1,12 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8" ?>
+-<omegat>
+-  <preference version="1.0">
+-    <source_font>Dialog</source_font>
+-    <source_font_size>12</source_font_size>
+-    <screen_width>690</screen_width>
+-    <screen_height>700</screen_height>
+-    <screen_x>0</screen_x>
+-    <screen_y>0</screen_y>
+-    <docking_layout>60#63#120#109#108#32#118#101#114#115#105#111#110#61#34#49#46#48#34#63#62#10#60#68#111#99#107#105#110#103#68#101#115#107#116#111#112#32#118#101#114#115#105#111#110#61#34#50#46#48#34#62#10#60#68#111#99#107#105#110#103#80#97#110#101#108#62#10#60#83#112#108#105#116#32#111#114#105#101#110#116#97#116#105#111#110#61#34#49#34#32#108#111#99#97#116#105#111#110#61#34#48#46#53#57#49#49#55#54#52#55#48#53#56#56#50#51#53#51#34#62#10#60#68#111#99#107#97#98#108#101#62#10#60#75#101#121#32#100#111#99#107#78#97#109#101#61#34#69#68#73#84#79#82#34#47#62#10#60#47#68#111#99#107#97#98#108#101#62#10#60#83#112#108#105#116#32#111#114#105#101#110#116#97#116#105#111#110#61#34#48#34#32#108#111#99#97#116#105#111#110#61#34#48#46#54#57#48#56#53#49#55#51#53#48#49#53#55#55#50#57#34#62#10#60#68#111#99#107#97#98#108#101#62#10#60#75#101#121#32#100#111#99#107#78#97#109#101#61#34#77#65#84#67#72#69#83#34#47#62#10#60#47#68#111#99#107#97#98#108#101#62#10#60#68#111#99#107#97#98#108#101#62#10#60#75#101#121#32#100#111#99#107#78#97#109#101#61#34#71#76#79#83#83#65#82#89#34#47#62#10#60#47#68#111#99#107#97#98#108#101#62#10#60#47#83#112#108#105#116#62#10#60#47#83#112#108#105#116#62#10#60#47#68#111#99#107#105#110#103#80#97#110#101#108#62#10#60#84#97#98#71#114#111#117#112#115#62#10#60#47#84#97#98#71#114#111#117#112#115#62#10#60#47#68#111#99#107#105#110#103#68#101#115#107#116#111#112#62#10</docking_layout>
+-  </preference>
+-</omegat>
+
+Property changes on: files/omegat.prefs.in
+___________________________________________________________________
+Deleted: fbsd:nokeywords
+## -1 +0,0 ##
+-yes
+\ No newline at end of property
+Deleted: svn:eol-style
+## -1 +0,0 ##
+-native
+\ No newline at end of property
+Deleted: svn:mime-type
+## -1 +0,0 ##
+-text/plain
+\ No newline at end of property
+Index: pkg-plist
+===================================================================
+--- pkg-plist	(revision 513478)
++++ pkg-plist	(working copy)
+@@ -1,10 +1,10 @@
+ bin/omegaT
+ %%DATADIR%%/OmegaT
+-%%DATADIR%%/OmegaT-JRE
+ %%DATADIR%%/OmegaT-license.txt
+ %%DATADIR%%/OmegaT.bat
+ %%DATADIR%%/OmegaT.jar
+ %%DATADIR%%/changes.txt
++%%DATADIR%%/contributors.txt
+ %%DATADIR%%/doc-license.txt
+ %%DATADIR%%/docs/OmegaT-license.txt
+ %%DATADIR%%/docs/ar/images/AppleKey.gif
+@@ -15,36 +15,88 @@
+ %%DATADIR%%/docs/ar/images/Restore.gif
+ %%DATADIR%%/docs/ar/images/Undock.gif
+ %%DATADIR%%/docs/ar/instantStartGuideNoTOC.html
+-%%DATADIR%%/docs/ar/version.properties
+-%%DATADIR%%/docs/be/Edit.html
+-%%DATADIR%%/docs/be/FilesDirs.html
+-%%DATADIR%%/docs/be/Fonts.html
+-%%DATADIR%%/docs/be/GettingStarted.html
+-%%DATADIR%%/docs/be/Gloss.html
+-%%DATADIR%%/docs/be/Important.html
+-%%DATADIR%%/docs/be/Install.html
+-%%DATADIR%%/docs/be/Intro.html
+-%%DATADIR%%/docs/be/Matches.html
+-%%DATADIR%%/docs/be/Navigating.html
+-%%DATADIR%%/docs/be/OmegaT.png
+-%%DATADIR%%/docs/be/SO.html
+-%%DATADIR%%/docs/be/Saving.html
+-%%DATADIR%%/docs/be/Searches.html
+-%%DATADIR%%/docs/be/Segmentation.html
+-%%DATADIR%%/docs/be/Shortcuts.html
+-%%DATADIR%%/docs/be/SysReqs.html
+-%%DATADIR%%/docs/be/TMFormats.html
+-%%DATADIR%%/docs/be/Tags.html
+-%%DATADIR%%/docs/be/Tips.html
+-%%DATADIR%%/docs/be/Translating.html
+-%%DATADIR%%/docs/be/UI.html
+-%%DATADIR%%/docs/be/WPFormats.html
++%%DATADIR%%/docs/ar/version_ar.properties
++%%DATADIR%%/docs/be/appendix.LanguageToolPlugin.inOmegaT.html
++%%DATADIR%%/docs/be/appendix.Scripts.inOmegaT.html
++%%DATADIR%%/docs/be/appendix.TeamProjects.html
++%%DATADIR%%/docs/be/appendix.Tokenizers.inOmegaT.html
++%%DATADIR%%/docs/be/appendix.acknowledgements.html
++%%DATADIR%%/docs/be/appendix.keyboard.html
++%%DATADIR%%/docs/be/appendix.languages.html
++%%DATADIR%%/docs/be/appendix.legal.notices.html
++%%DATADIR%%/docs/be/appendix.shortcut.custom.html
++%%DATADIR%%/docs/be/appendix.website.html
++%%DATADIR%%/docs/be/chapter.TaaS.html
++%%DATADIR%%/docs/be/chapter.about.OmegaT.html
++%%DATADIR%%/docs/be/chapter.dictionaries.html
++%%DATADIR%%/docs/be/chapter.file.filters.html
++%%DATADIR%%/docs/be/chapter.files.and.folders.html
++%%DATADIR%%/docs/be/chapter.files.to.translate.html
++%%DATADIR%%/docs/be/chapter.formatted.text.html
++%%DATADIR%%/docs/be/chapter.glossaries.html
++%%DATADIR%%/docs/be/chapter.installing.and.running.html
++%%DATADIR%%/docs/be/chapter.instant.start.guide.html
++%%DATADIR%%/docs/be/chapter.machine.translate.html
++%%DATADIR%%/docs/be/chapter.menu.html
++%%DATADIR%%/docs/be/chapter.misc.html
++%%DATADIR%%/docs/be/chapter.plain.text.html
++%%DATADIR%%/docs/be/chapter.project.properties.html
++%%DATADIR%%/docs/be/chapter.regexp.html
++%%DATADIR%%/docs/be/chapter.searchandreplace.html
++%%DATADIR%%/docs/be/chapter.searches.html
++%%DATADIR%%/docs/be/chapter.segmentation.html
++%%DATADIR%%/docs/be/chapter.spellchecker.html
++%%DATADIR%%/docs/be/chapter.translation.editing.html
++%%DATADIR%%/docs/be/chapter.translation.memories.html
++%%DATADIR%%/docs/be/chapter.user.interface.html
++%%DATADIR%%/docs/be/images/AppleKey.gif
++%%DATADIR%%/docs/be/images/Comments_25.png
++%%DATADIR%%/docs/be/images/DictMerriamWebster.png
++%%DATADIR%%/docs/be/images/Dock.gif
++%%DATADIR%%/docs/be/images/EditingBehaviourOptions.png
++%%DATADIR%%/docs/be/images/EditingBehaviourOptions25.png
++%%DATADIR%%/docs/be/images/GlossaryEntry_25.png
++%%DATADIR%%/docs/be/images/GlossaryPane_25.png
+ %%DATADIR%%/docs/be/images/InstantGuide_1.png
+ %%DATADIR%%/docs/be/images/InstantGuide_2.png
++%%DATADIR%%/docs/be/images/LanguageToolExample.png
++%%DATADIR%%/docs/be/images/MatchStatistics.png
++%%DATADIR%%/docs/be/images/MatchesPaneSetup.png
++%%DATADIR%%/docs/be/images/MatchesPane_25.png
++%%DATADIR%%/docs/be/images/Maximize.gif
++%%DATADIR%%/docs/be/images/Minimize.gif
++%%DATADIR%%/docs/be/images/MobyDick.png
++%%DATADIR%%/docs/be/images/MultiTerm_Glossary_25.png
++%%DATADIR%%/docs/be/images/OmT_Cyrillic.png
++%%DATADIR%%/docs/be/images/OmT_Japanese.png
++%%DATADIR%%/docs/be/images/OmegaT_icon.png
++%%DATADIR%%/docs/be/images/OmegaT_panes_25.png
++%%DATADIR%%/docs/be/images/OmegaT_projects_and_subfolders.png
++%%DATADIR%%/docs/be/images/Omegatproject.png
++%%DATADIR%%/docs/be/images/OptionsTagValidation_25.png
++%%DATADIR%%/docs/be/images/RegexTester.png
++%%DATADIR%%/docs/be/images/Restore.gif
++%%DATADIR%%/docs/be/images/ScriptingDialog.png
++%%DATADIR%%/docs/be/images/SpellcheckerSetup_25.png
++%%DATADIR%%/docs/be/images/SpellcheckingText.png
++%%DATADIR%%/docs/be/images/StatisticsWindow_25.png
++%%DATADIR%%/docs/be/images/TagValidation.png
++%%DATADIR%%/docs/be/images/TagValidator.png
++%%DATADIR%%/docs/be/images/Team_projects_Add.png
++%%DATADIR%%/docs/be/images/Team_projects_checkout.png
++%%DATADIR%%/docs/be/images/Team_projects_checkoutAddFolder.png
++%%DATADIR%%/docs/be/images/Team_projects_checkoutSVNupdate.png
++%%DATADIR%%/docs/be/images/Team_projects_inSync.png
++%%DATADIR%%/docs/be/images/Team_projects_initialCommit.png
++%%DATADIR%%/docs/be/images/TortoiseExplorerExtension.png
++%%DATADIR%%/docs/be/images/Undock.gif
++%%DATADIR%%/docs/be/images/saveglossary.png
+ %%DATADIR%%/docs/be/index.html
+ %%DATADIR%%/docs/be/instantStartGuideNoTOC.html
++%%DATADIR%%/docs/be/ix01.html
++%%DATADIR%%/docs/be/license.txt
+ %%DATADIR%%/docs/be/omegat.css
+-%%DATADIR%%/docs/be/version.properties
++%%DATADIR%%/docs/be/version_be.properties
+ %%DATADIR%%/docs/ca/GoogleTranslate.html
+ %%DATADIR%%/docs/ca/OmegaT.css
+ %%DATADIR%%/docs/ca/aboutOmegaT.html
+@@ -103,10 +155,11 @@
+ %%DATADIR%%/docs/ca/translationEditing.html
+ %%DATADIR%%/docs/ca/translationMemories.html
+ %%DATADIR%%/docs/ca/userInterface.html
+-%%DATADIR%%/docs/ca/version.properties
++%%DATADIR%%/docs/ca/version_ca.properties
+ %%DATADIR%%/docs/ca/website.html
+ %%DATADIR%%/docs/ca/xindex.html
+ %%DATADIR%%/docs/changes.txt
++%%DATADIR%%/docs/contributors.txt
+ %%DATADIR%%/docs/cs/OmegaT.css
+ %%DATADIR%%/docs/cs/appendix.LanguageToolPlugin.inOmegaT.html
+ %%DATADIR%%/docs/cs/appendix.Scripts.inOmegaT.html
+@@ -204,13 +257,13 @@
+ %%DATADIR%%/docs/cs/instantStartGuideNoTOC.html
+ %%DATADIR%%/docs/cs/ix01.html
+ %%DATADIR%%/docs/cs/license.txt
+-%%DATADIR%%/docs/cs/version.properties
++%%DATADIR%%/docs/cs/version_cs.properties
+ %%DATADIR%%/docs/cy/OmegaT.css
+ %%DATADIR%%/docs/cy/images/InstantGuide_1.png
+ %%DATADIR%%/docs/cy/images/InstantGuide_2.png
+ %%DATADIR%%/docs/cy/instantStartGuideNoTOC.html
+ %%DATADIR%%/docs/cy/license.txt
+-%%DATADIR%%/docs/cy/version.properties
++%%DATADIR%%/docs/cy/version_cy.properties
+ %%DATADIR%%/docs/da/images/AppleKey.gif
+ %%DATADIR%%/docs/da/images/Dock.gif
+ %%DATADIR%%/docs/da/images/MatchesPane.png
+@@ -222,7 +275,7 @@
+ %%DATADIR%%/docs/da/images/tagged_segment.png
+ %%DATADIR%%/docs/da/images/tagged_segment_target.png
+ %%DATADIR%%/docs/da/instantStartGuideNoTOC.html
+-%%DATADIR%%/docs/da/version.properties
++%%DATADIR%%/docs/da/version_da.properties
+ %%DATADIR%%/docs/de/Searches.html
+ %%DATADIR%%/docs/de/Segmentation.html
+ %%DATADIR%%/docs/de/UserInterface.html
+@@ -273,7 +326,7 @@
+ %%DATADIR%%/docs/de/spellchecker.html
+ %%DATADIR%%/docs/de/translationEditing.html
+ %%DATADIR%%/docs/de/translationMemories.html
+-%%DATADIR%%/docs/de/version.properties
++%%DATADIR%%/docs/de/version_de.properties
+ %%DATADIR%%/docs/de/website.html
+ %%DATADIR%%/docs/de/xindex.html
+ %%DATADIR%%/docs/doc-license.txt
+@@ -356,93 +409,38 @@
+ %%DATADIR%%/docs/el/instantStartGuideNoTOC.html
+ %%DATADIR%%/docs/el/ix01.html
+ %%DATADIR%%/docs/el/omegat.css
+-%%DATADIR%%/docs/el/version.properties
++%%DATADIR%%/docs/el/version_el.properties
+ %%DATADIR%%/docs/en/OmegaT.css
+-%%DATADIR%%/docs/en/appendix.LanguageToolPlugin.inOmegaT.html
+-%%DATADIR%%/docs/en/appendix.Scripts.inOmegaT.html
+-%%DATADIR%%/docs/en/appendix.TeamProjects.html
+-%%DATADIR%%/docs/en/appendix.Tokenizers.inOmegaT.html
+-%%DATADIR%%/docs/en/appendix.acknowledgements.html
+-%%DATADIR%%/docs/en/appendix.keyboard.html
+-%%DATADIR%%/docs/en/appendix.languages.html
+-%%DATADIR%%/docs/en/appendix.legal.notices.html
++%%DATADIR%%/docs/en/appendix.dictionaries.html
++%%DATADIR%%/docs/en/appendix.glossaries.html
++%%DATADIR%%/docs/en/appendix.regexp.html
+ %%DATADIR%%/docs/en/appendix.shortcut.custom.html
+-%%DATADIR%%/docs/en/appendix.website.html
+-%%DATADIR%%/docs/en/chapter.TaaS.html
+-%%DATADIR%%/docs/en/chapter.about.OmegaT.html
+-%%DATADIR%%/docs/en/chapter.dictionaries.html
+-%%DATADIR%%/docs/en/chapter.file.filters.html
+-%%DATADIR%%/docs/en/chapter.files.and.folders.html
+-%%DATADIR%%/docs/en/chapter.files.to.translate.html
+-%%DATADIR%%/docs/en/chapter.formatted.text.html
+-%%DATADIR%%/docs/en/chapter.glossaries.html
++%%DATADIR%%/docs/en/appendix.spellchecker.html
+ %%DATADIR%%/docs/en/chapter.installing.and.running.html
+-%%DATADIR%%/docs/en/chapter.instant.start.guide.html
+-%%DATADIR%%/docs/en/chapter.machine.translate.html
+-%%DATADIR%%/docs/en/chapter.menu.html
+-%%DATADIR%%/docs/en/chapter.misc.html
+-%%DATADIR%%/docs/en/chapter.plain.text.html
+-%%DATADIR%%/docs/en/chapter.project.properties.html
+-%%DATADIR%%/docs/en/chapter.regexp.html
+-%%DATADIR%%/docs/en/chapter.searchandreplace.html
+-%%DATADIR%%/docs/en/chapter.searches.html
+-%%DATADIR%%/docs/en/chapter.segmentation.html
+-%%DATADIR%%/docs/en/chapter.spellchecker.html
+-%%DATADIR%%/docs/en/chapter.translation.editing.html
+-%%DATADIR%%/docs/en/chapter.translation.memories.html
+-%%DATADIR%%/docs/en/chapter.user.interface.html
+-%%DATADIR%%/docs/en/images/AppleKey.gif
+-%%DATADIR%%/docs/en/images/AsciiFilteroptions.png
+-%%DATADIR%%/docs/en/images/Comments_25.png
++%%DATADIR%%/docs/en/howtos.html
+ %%DATADIR%%/docs/en/images/DictMerriamWebster.png
+-%%DATADIR%%/docs/en/images/Dock.gif
+-%%DATADIR%%/docs/en/images/EditingBehaviourOptions.png
+-%%DATADIR%%/docs/en/images/EditingBehaviourOptions25.png
++%%DATADIR%%/docs/en/images/Dock.png
+ %%DATADIR%%/docs/en/images/GlossaryEntry_25.png
+ %%DATADIR%%/docs/en/images/GlossaryPane_25.png
+ %%DATADIR%%/docs/en/images/InstantGuide_1.png
+ %%DATADIR%%/docs/en/images/InstantGuide_2.png
+-%%DATADIR%%/docs/en/images/LanguageToolExample.png
+-%%DATADIR%%/docs/en/images/Main_pane_counters.png
+-%%DATADIR%%/docs/en/images/MatchStatistics.png
+-%%DATADIR%%/docs/en/images/MatchesPaneSetup.png
+-%%DATADIR%%/docs/en/images/MatchesPane_25.png
+-%%DATADIR%%/docs/en/images/Maximize.gif
+-%%DATADIR%%/docs/en/images/Minimize.gif
+-%%DATADIR%%/docs/en/images/MobyDick.png
++%%DATADIR%%/docs/en/images/Maximize.png
++%%DATADIR%%/docs/en/images/Minimize.png
+ %%DATADIR%%/docs/en/images/MultiTerm_Glossary_25.png
+-%%DATADIR%%/docs/en/images/OmT_Cyrillic.png
+-%%DATADIR%%/docs/en/images/OmT_Japanese.png
+-%%DATADIR%%/docs/en/images/OmegaT_icon.png
+-%%DATADIR%%/docs/en/images/OmegaT_panes_25.png
+-%%DATADIR%%/docs/en/images/OmegaT_projects_and_subfolders.png
+-%%DATADIR%%/docs/en/images/Omegatproject.png
+-%%DATADIR%%/docs/en/images/OptionsTabValidation_25.png
+-%%DATADIR%%/docs/en/images/OptionsTagValidation_25.png
+ %%DATADIR%%/docs/en/images/RegexTester.png
+-%%DATADIR%%/docs/en/images/Restore.gif
+-%%DATADIR%%/docs/en/images/ScriptingDialog.png
++%%DATADIR%%/docs/en/images/Restore.png
+ %%DATADIR%%/docs/en/images/SpellcheckerSetup_25.png
+ %%DATADIR%%/docs/en/images/SpellcheckingText.png
+-%%DATADIR%%/docs/en/images/StatisticsWindow_25.png
+-%%DATADIR%%/docs/en/images/TagValidation.png
+-%%DATADIR%%/docs/en/images/TagValidator.png
+-%%DATADIR%%/docs/en/images/Team_projects_Add.png
+-%%DATADIR%%/docs/en/images/Team_projects_checkout.png
+-%%DATADIR%%/docs/en/images/Team_projects_checkoutAddFolder.png
+-%%DATADIR%%/docs/en/images/Team_projects_checkoutSVNupdate.png
+-%%DATADIR%%/docs/en/images/Team_projects_inSync.png
+-%%DATADIR%%/docs/en/images/Team_projects_initialCommit.png
+-%%DATADIR%%/docs/en/images/TortoiseExplorerExtension.png
+-%%DATADIR%%/docs/en/images/Undock.gif
+-%%DATADIR%%/docs/en/images/saveglossary.png
+-%%DATADIR%%/docs/en/images/tagged_segment.png
+-%%DATADIR%%/docs/en/images/tagged_segment_target.png
++%%DATADIR%%/docs/en/images/Undock.png
+ %%DATADIR%%/docs/en/index.html
+ %%DATADIR%%/docs/en/instantStartGuideNoTOC.html
+ %%DATADIR%%/docs/en/ix01.html
+ %%DATADIR%%/docs/en/license.txt
++%%DATADIR%%/docs/en/menus.html
++%%DATADIR%%/docs/en/panes.html
++%%DATADIR%%/docs/en/project.folder.html
+ %%DATADIR%%/docs/en/version.properties
++%%DATADIR%%/docs/en/windows.and.dialogs.html
+ %%DATADIR%%/docs/eo/Edit.html
+ %%DATADIR%%/docs/eo/FilesDirs.html
+ %%DATADIR%%/docs/eo/Fonts.html
+@@ -468,7 +466,7 @@
+ %%DATADIR%%/docs/eo/WPFormats.html
+ %%DATADIR%%/docs/eo/index.html
+ %%DATADIR%%/docs/eo/omegat.css
+-%%DATADIR%%/docs/eo/version.properties
++%%DATADIR%%/docs/eo/version_eo.properties
+ %%DATADIR%%/docs/es/OmegaT.css
+ %%DATADIR%%/docs/es/appendix.acknowledgements.html
+ %%DATADIR%%/docs/es/appendix.keyboard.html
+@@ -532,7 +530,7 @@
+ %%DATADIR%%/docs/es/instantStartGuideNoTOC.html
+ %%DATADIR%%/docs/es/ix01.html
+ %%DATADIR%%/docs/es/license.txt
+-%%DATADIR%%/docs/es/version.properties
++%%DATADIR%%/docs/es/version_es.properties
+ %%DATADIR%%/docs/eu/GoogleTranslate.html
+ %%DATADIR%%/docs/eu/OmegaT.css
+ %%DATADIR%%/docs/eu/aboutOmegaT.html
+@@ -593,7 +591,7 @@
+ %%DATADIR%%/docs/eu/translationEditing.html
+ %%DATADIR%%/docs/eu/translationMemories.html
+ %%DATADIR%%/docs/eu/userInterface.html
+-%%DATADIR%%/docs/eu/version.properties
++%%DATADIR%%/docs/eu/version_eu.properties
+ %%DATADIR%%/docs/eu/website.html
+ %%DATADIR%%/docs/eu/xindex.html
+ %%DATADIR%%/docs/fr/OmegaT.css
+@@ -680,7 +678,7 @@
+ %%DATADIR%%/docs/fr/instantStartGuideNoTOC.html
+ %%DATADIR%%/docs/fr/ix01.html
+ %%DATADIR%%/docs/fr/license.txt
+-%%DATADIR%%/docs/fr/version.properties
++%%DATADIR%%/docs/fr/version_fr.properties
+ %%DATADIR%%/docs/gl/OmegaT.css
+ %%DATADIR%%/docs/gl/appendix.LanguageToolPlugin.inOmegaT.html
+ %%DATADIR%%/docs/gl/appendix.ScriptingPlugin.inOmegaT.html
+@@ -765,7 +763,88 @@
+ %%DATADIR%%/docs/gl/instantStartGuideNoTOC.html
+ %%DATADIR%%/docs/gl/ix01.html
+ %%DATADIR%%/docs/gl/license.txt
+-%%DATADIR%%/docs/gl/version.properties
++%%DATADIR%%/docs/gl/version_gl.properties
++%%DATADIR%%/docs/hr/OmegaT.css
++%%DATADIR%%/docs/hr/appendix.LanguageToolPlugin.inOmegaT.html
++%%DATADIR%%/docs/hr/appendix.Scripts.inOmegaT.html
++%%DATADIR%%/docs/hr/appendix.TeamProjects.html
++%%DATADIR%%/docs/hr/appendix.Tokenizers.inOmegaT.html
++%%DATADIR%%/docs/hr/appendix.acknowledgements.html
++%%DATADIR%%/docs/hr/appendix.keyboard.html
++%%DATADIR%%/docs/hr/appendix.languages.html
++%%DATADIR%%/docs/hr/appendix.legal.notices.html
++%%DATADIR%%/docs/hr/appendix.shortcut.custom.html
++%%DATADIR%%/docs/hr/appendix.website.html
++%%DATADIR%%/docs/hr/chapter.TaaS.html
++%%DATADIR%%/docs/hr/chapter.about.OmegaT.html
++%%DATADIR%%/docs/hr/chapter.dictionaries.html
++%%DATADIR%%/docs/hr/chapter.file.filters.html
++%%DATADIR%%/docs/hr/chapter.files.and.folders.html
++%%DATADIR%%/docs/hr/chapter.files.to.translate.html
++%%DATADIR%%/docs/hr/chapter.formatted.text.html
++%%DATADIR%%/docs/hr/chapter.glossaries.html
++%%DATADIR%%/docs/hr/chapter.installing.and.running.html
++%%DATADIR%%/docs/hr/chapter.instant.start.guide.html
++%%DATADIR%%/docs/hr/chapter.machine.translate.html
++%%DATADIR%%/docs/hr/chapter.menu.html
++%%DATADIR%%/docs/hr/chapter.misc.html
++%%DATADIR%%/docs/hr/chapter.plain.text.html
++%%DATADIR%%/docs/hr/chapter.project.properties.html
++%%DATADIR%%/docs/hr/chapter.regexp.html
++%%DATADIR%%/docs/hr/chapter.searchandreplace.html
++%%DATADIR%%/docs/hr/chapter.searches.html
++%%DATADIR%%/docs/hr/chapter.segmentation.html
++%%DATADIR%%/docs/hr/chapter.spellchecker.html
++%%DATADIR%%/docs/hr/chapter.translation.editing.html
++%%DATADIR%%/docs/hr/chapter.translation.memories.html
++%%DATADIR%%/docs/hr/chapter.user.interface.html
++%%DATADIR%%/docs/hr/images/AppleKey.gif
++%%DATADIR%%/docs/hr/images/Comments_25.png
++%%DATADIR%%/docs/hr/images/DictMerriamWebster.png
++%%DATADIR%%/docs/hr/images/Dock.gif
++%%DATADIR%%/docs/hr/images/EditingBehaviourOptions.png
++%%DATADIR%%/docs/hr/images/EditingBehaviourOptions25.png
++%%DATADIR%%/docs/hr/images/GlossaryEntry_25.png
++%%DATADIR%%/docs/hr/images/GlossaryPane_25.png
++%%DATADIR%%/docs/hr/images/InstantGuide_1.png
++%%DATADIR%%/docs/hr/images/InstantGuide_2.png
++%%DATADIR%%/docs/hr/images/LanguageToolExample.png
++%%DATADIR%%/docs/hr/images/MatchStatistics.png
++%%DATADIR%%/docs/hr/images/MatchesPaneSetup.png
++%%DATADIR%%/docs/hr/images/MatchesPane_25.png
++%%DATADIR%%/docs/hr/images/Maximize.gif
++%%DATADIR%%/docs/hr/images/Minimize.gif
++%%DATADIR%%/docs/hr/images/MobyDick.png
++%%DATADIR%%/docs/hr/images/MultiTerm_Glossary_25.png
++%%DATADIR%%/docs/hr/images/OmT_Cyrillic.png
++%%DATADIR%%/docs/hr/images/OmT_Japanese.png
++%%DATADIR%%/docs/hr/images/OmegaT_icon.png
++%%DATADIR%%/docs/hr/images/OmegaT_panes_25.png
++%%DATADIR%%/docs/hr/images/OmegaT_projects_and_subfolders.png
++%%DATADIR%%/docs/hr/images/Omegatproject.png
++%%DATADIR%%/docs/hr/images/OptionsTagValidation_25.png
++%%DATADIR%%/docs/hr/images/RegexTester.png
++%%DATADIR%%/docs/hr/images/Restore.gif
++%%DATADIR%%/docs/hr/images/ScriptingDialog.png
++%%DATADIR%%/docs/hr/images/SpellcheckerSetup_25.png
++%%DATADIR%%/docs/hr/images/SpellcheckingText.png
++%%DATADIR%%/docs/hr/images/StatisticsWindow_25.png
++%%DATADIR%%/docs/hr/images/TagValidation.png
++%%DATADIR%%/docs/hr/images/TagValidator.png
++%%DATADIR%%/docs/hr/images/Team_projects_Add.png
++%%DATADIR%%/docs/hr/images/Team_projects_checkout.png
++%%DATADIR%%/docs/hr/images/Team_projects_checkoutAddFolder.png
++%%DATADIR%%/docs/hr/images/Team_projects_checkoutSVNupdate.png
++%%DATADIR%%/docs/hr/images/Team_projects_inSync.png
++%%DATADIR%%/docs/hr/images/Team_projects_initialCommit.png
++%%DATADIR%%/docs/hr/images/TortoiseExplorerExtension.png
++%%DATADIR%%/docs/hr/images/Undock.gif
++%%DATADIR%%/docs/hr/images/saveglossary.png
++%%DATADIR%%/docs/hr/index.html
++%%DATADIR%%/docs/hr/instantStartGuideNoTOC.html
++%%DATADIR%%/docs/hr/ix01.html
++%%DATADIR%%/docs/hr/license.txt
++%%DATADIR%%/docs/hr/version_hr.properties
+ %%DATADIR%%/docs/hu/GoogleTranslate.html
+ %%DATADIR%%/docs/hu/OmegaT.css
+ %%DATADIR%%/docs/hu/aboutOmegaT.html
+@@ -824,7 +903,7 @@
+ %%DATADIR%%/docs/hu/translationEditing.html
+ %%DATADIR%%/docs/hu/translationMemories.html
+ %%DATADIR%%/docs/hu/userInterface.html
+-%%DATADIR%%/docs/hu/version.properties
++%%DATADIR%%/docs/hu/version_hu.properties
+ %%DATADIR%%/docs/hu/website.html
+ %%DATADIR%%/docs/hu/xindex.html
+ %%DATADIR%%/docs/ia/OmegaT.css
+@@ -910,7 +989,7 @@
+ %%DATADIR%%/docs/ia/index.html
+ %%DATADIR%%/docs/ia/instantStartGuideNoTOC.html
+ %%DATADIR%%/docs/ia/ix01.html
+-%%DATADIR%%/docs/ia/version.properties
++%%DATADIR%%/docs/ia/version_ia.properties
+ %%DATADIR%%/docs/id/images/InstantGuide_1.png
+ %%DATADIR%%/docs/id/images/InstantGuide_2.png
+ %%DATADIR%%/docs/id/instantStartGuideNoTOC.html
+@@ -996,7 +1075,7 @@
+ %%DATADIR%%/docs/it/instantStartGuideNoTOC.html
+ %%DATADIR%%/docs/it/ix01.html
+ %%DATADIR%%/docs/it/license.txt
+-%%DATADIR%%/docs/it/version.properties
++%%DATADIR%%/docs/it/version_it.properties
+ %%DATADIR%%/docs/ja/OmegaT.css
+ %%DATADIR%%/docs/ja/appendix.LanguageToolPlugin.inOmegaT.html
+ %%DATADIR%%/docs/ja/appendix.ScriptingPlugin.inOmegaT.html
+@@ -1081,7 +1160,7 @@
+ %%DATADIR%%/docs/ja/instantStartGuideNoTOC.html
+ %%DATADIR%%/docs/ja/ix01.html
+ %%DATADIR%%/docs/ja/license.txt
+-%%DATADIR%%/docs/ja/version.properties
++%%DATADIR%%/docs/ja/version_ja.properties
+ %%DATADIR%%/docs/ko/OmegaT.css
+ %%DATADIR%%/docs/ko/images/InstantGuide_1.png
+ %%DATADIR%%/docs/ko/images/InstantGuide_2.png
+@@ -1094,10 +1173,14 @@
+ %%DATADIR%%/docs/nl/appendix.TokenizerPlugin.inOmegaT.html
+ %%DATADIR%%/docs/nl/appendix.Tokenizers.inOmegaT.html
+ %%DATADIR%%/docs/nl/appendix.acknowledgements.html
++%%DATADIR%%/docs/nl/appendix.dictionaries.html
++%%DATADIR%%/docs/nl/appendix.glossaries.html
+ %%DATADIR%%/docs/nl/appendix.keyboard.html
+ %%DATADIR%%/docs/nl/appendix.languages.html
+ %%DATADIR%%/docs/nl/appendix.legal.notices.html
++%%DATADIR%%/docs/nl/appendix.regexp.html
+ %%DATADIR%%/docs/nl/appendix.shortcut.custom.html
++%%DATADIR%%/docs/nl/appendix.spellchecker.html
+ %%DATADIR%%/docs/nl/appendix.website.html
+ %%DATADIR%%/docs/nl/chapter.TaaS.html
+ %%DATADIR%%/docs/nl/chapter.about.OmegaT.html
+@@ -1123,10 +1206,12 @@
+ %%DATADIR%%/docs/nl/chapter.translation.editing.html
+ %%DATADIR%%/docs/nl/chapter.translation.memories.html
+ %%DATADIR%%/docs/nl/chapter.user.interface.html
++%%DATADIR%%/docs/nl/howtos.html
+ %%DATADIR%%/docs/nl/images/AppleKey.gif
+ %%DATADIR%%/docs/nl/images/Comments_25.png
+ %%DATADIR%%/docs/nl/images/DictMerriamWebster.png
+ %%DATADIR%%/docs/nl/images/Dock.gif
++%%DATADIR%%/docs/nl/images/Dock.png
+ %%DATADIR%%/docs/nl/images/EditingBehaviourOptions.png
+ %%DATADIR%%/docs/nl/images/EditingBehaviourOptions25.png
+ %%DATADIR%%/docs/nl/images/GlossaryEntry_25.png
+@@ -1138,7 +1223,9 @@
+ %%DATADIR%%/docs/nl/images/MatchesPaneSetup.png
+ %%DATADIR%%/docs/nl/images/MatchesPane_25.png
+ %%DATADIR%%/docs/nl/images/Maximize.gif
++%%DATADIR%%/docs/nl/images/Maximize.png
+ %%DATADIR%%/docs/nl/images/Minimize.gif
++%%DATADIR%%/docs/nl/images/Minimize.png
+ %%DATADIR%%/docs/nl/images/MobyDick.png
+ %%DATADIR%%/docs/nl/images/MultiTerm_Glossary_25.png
+ %%DATADIR%%/docs/nl/images/NewProject_26.png
+@@ -1152,6 +1239,7 @@
+ %%DATADIR%%/docs/nl/images/OptionsTagValidation_25.png
+ %%DATADIR%%/docs/nl/images/RegexTester.png
+ %%DATADIR%%/docs/nl/images/Restore.gif
++%%DATADIR%%/docs/nl/images/Restore.png
+ %%DATADIR%%/docs/nl/images/ScriptingDialog.png
+ %%DATADIR%%/docs/nl/images/SpellcheckerSetup.png
+ %%DATADIR%%/docs/nl/images/SpellcheckerSetup2.png
+@@ -1169,6 +1257,7 @@
+ %%DATADIR%%/docs/nl/images/TextSearch25.png
+ %%DATADIR%%/docs/nl/images/TortoiseExplorerExtension.png
+ %%DATADIR%%/docs/nl/images/Undock.gif
++%%DATADIR%%/docs/nl/images/Undock.png
+ %%DATADIR%%/docs/nl/images/saveglossary.png
+ %%DATADIR%%/docs/nl/images/tagged_segment.png
+ %%DATADIR%%/docs/nl/images/tagged_segment_target.png
+@@ -1176,7 +1265,11 @@
+ %%DATADIR%%/docs/nl/instantStartGuideNoTOC.html
+ %%DATADIR%%/docs/nl/ix01.html
+ %%DATADIR%%/docs/nl/license.txt
+-%%DATADIR%%/docs/nl/version.properties
++%%DATADIR%%/docs/nl/menus.html
++%%DATADIR%%/docs/nl/panes.html
++%%DATADIR%%/docs/nl/project.folder.html
++%%DATADIR%%/docs/nl/version_nl.properties
++%%DATADIR%%/docs/nl/windows.and.dialogs.html
+ %%DATADIR%%/docs/no/OmegaT.css
+ %%DATADIR%%/docs/no/images/InstantGuide_1.png
+ %%DATADIR%%/docs/no/images/InstantGuide_2.png
+@@ -1236,7 +1329,7 @@
+ %%DATADIR%%/docs/pl/translationEditing.html
+ %%DATADIR%%/docs/pl/translationMemories.html
+ %%DATADIR%%/docs/pl/userInterface.html
+-%%DATADIR%%/docs/pl/version.properties
++%%DATADIR%%/docs/pl/version_pl.properties
+ %%DATADIR%%/docs/pl/website.html
+ %%DATADIR%%/docs/pl/xindex.html
+ %%DATADIR%%/docs/pt_BR/OmegaT.css
+@@ -1327,7 +1420,7 @@
+ %%DATADIR%%/docs/pt_BR/instantStartGuideNoTOC.html
+ %%DATADIR%%/docs/pt_BR/ix01.html
+ %%DATADIR%%/docs/pt_BR/license.txt
+-%%DATADIR%%/docs/pt_BR/version.properties
++%%DATADIR%%/docs/pt_BR/version_pt_BR.properties
+ %%DATADIR%%/docs/ru/OmegaT.css
+ %%DATADIR%%/docs/ru/appendix.LanguageToolPlugin.inOmegaT.html
+ %%DATADIR%%/docs/ru/appendix.ScriptingPlugin.inOmegaT.html
+@@ -1413,7 +1506,11 @@
+ %%DATADIR%%/docs/ru/index.html
+ %%DATADIR%%/docs/ru/instantStartGuideNoTOC.html
+ %%DATADIR%%/docs/ru/ix01.html
+-%%DATADIR%%/docs/ru/version.properties
++%%DATADIR%%/docs/ru/version_ru.properties
++%%DATADIR%%/docs/sc/OmegaT.css
++%%DATADIR%%/docs/sc/images/InstantGuide_1.png
++%%DATADIR%%/docs/sc/images/InstantGuide_2.png
++%%DATADIR%%/docs/sc/instantStartGuideNoTOC.html
+ %%DATADIR%%/docs/sh/OmegaT.css
+ %%DATADIR%%/docs/sh/aboutOmegaT.html
+ %%DATADIR%%/docs/sh/fileFilters.html
+@@ -1446,7 +1543,7 @@
+ %%DATADIR%%/docs/sh/translationEditing.html
+ %%DATADIR%%/docs/sh/translationMemories.html
+ %%DATADIR%%/docs/sh/userInterface.html
+-%%DATADIR%%/docs/sh/version.properties
++%%DATADIR%%/docs/sh/version_sh.properties
+ %%DATADIR%%/docs/sh/website.html
+ %%DATADIR%%/docs/sk/OmegaT.css
+ %%DATADIR%%/docs/sk/aboutOmegaT.html
+@@ -1480,7 +1577,7 @@
+ %%DATADIR%%/docs/sk/translationEditing.html
+ %%DATADIR%%/docs/sk/translationMemories.html
+ %%DATADIR%%/docs/sk/userInterface.html
+-%%DATADIR%%/docs/sk/version.properties
++%%DATADIR%%/docs/sk/version_sk.properties
+ %%DATADIR%%/docs/sk/website.html
+ %%DATADIR%%/docs/sl/GoogleTranslate.html
+ %%DATADIR%%/docs/sl/OmegaT.css
+@@ -1539,7 +1636,7 @@
+ %%DATADIR%%/docs/sl/translationEditing.html
+ %%DATADIR%%/docs/sl/translationMemories.html
+ %%DATADIR%%/docs/sl/userInterface.html
+-%%DATADIR%%/docs/sl/version.properties
++%%DATADIR%%/docs/sl/version_sl.properties
+ %%DATADIR%%/docs/sl/website.html
+ %%DATADIR%%/docs/sl/xindex.html
+ %%DATADIR%%/docs/sq/aboutOmegaT.html
+@@ -1571,9 +1668,11 @@
+ %%DATADIR%%/docs/sq/translationEditing.html
+ %%DATADIR%%/docs/sq/translationMemories.html
+ %%DATADIR%%/docs/sq/userInterface.html
+-%%DATADIR%%/docs/sq/version.properties
++%%DATADIR%%/docs/sq/version_sq.properties
+ %%DATADIR%%/docs/sq/website.html
+ %%DATADIR%%/docs/sv/OmegaT.css
++%%DATADIR%%/docs/sv/images/InstantGuide_1.png
++%%DATADIR%%/docs/sv/images/InstantGuide_2.png
+ %%DATADIR%%/docs/sv/images/MatchesPane.png
+ %%DATADIR%%/docs/sv/images/NewProject.png
+ %%DATADIR%%/docs/sv/images/tagged_segment.png
+@@ -1580,17 +1679,66 @@
+ %%DATADIR%%/docs/sv/images/tagged_segment_target.png
+ %%DATADIR%%/docs/sv/instantStartGuideNoTOC.html
+ %%DATADIR%%/docs/sv/license.txt
+-%%DATADIR%%/docs/sv/version.properties
++%%DATADIR%%/docs/sv/version_sv.properties
+ %%DATADIR%%/docs/tr/OmegaT.css
+ %%DATADIR%%/docs/tr/images/NewProject.png
+ %%DATADIR%%/docs/tr/images/tagged_segment.png
+ %%DATADIR%%/docs/tr/images/tagged_segment_target.png
+ %%DATADIR%%/docs/tr/instantStartGuideNoTOC.html
+-%%DATADIR%%/docs/tr/version.properties
++%%DATADIR%%/docs/tr/version_tr.properties
+ %%DATADIR%%/docs/uk/OmegaT.css
++%%DATADIR%%/docs/uk/aboutOmegaT.html
++%%DATADIR%%/docs/uk/consoleMode.html
++%%DATADIR%%/docs/uk/fileFilters.html
++%%DATADIR%%/docs/uk/filesAndDirectories.html
++%%DATADIR%%/docs/uk/filesToTranslate.html
++%%DATADIR%%/docs/uk/fontSettings.html
++%%DATADIR%%/docs/uk/formattedText.html
++%%DATADIR%%/docs/uk/glossaries.html
++%%DATADIR%%/docs/uk/images/AppleKey.gif
++%%DATADIR%%/docs/uk/images/AsciiFilteroptions.jpg
++%%DATADIR%%/docs/uk/images/Dock.gif
++%%DATADIR%%/docs/uk/images/Glossary_pane.png
+ %%DATADIR%%/docs/uk/images/InstantGuide_1.png
+ %%DATADIR%%/docs/uk/images/InstantGuide_2.png
++%%DATADIR%%/docs/uk/images/MatchesPane.png
++%%DATADIR%%/docs/uk/images/Maximize.gif
++%%DATADIR%%/docs/uk/images/Minimize.gif
++%%DATADIR%%/docs/uk/images/NewProject.png
++%%DATADIR%%/docs/uk/images/OmegaT_icon.png
++%%DATADIR%%/docs/uk/images/OmegaT_panes.png
++%%DATADIR%%/docs/uk/images/OmegaT_projects_and_subdirectories.png
++%%DATADIR%%/docs/uk/images/Omegatproject.png
++%%DATADIR%%/docs/uk/images/Restore.gif
++%%DATADIR%%/docs/uk/images/SpellcheckerSetup2.png
++%%DATADIR%%/docs/uk/images/SpellcheckingText.png
++%%DATADIR%%/docs/uk/images/TagValidator.png
++%%DATADIR%%/docs/uk/images/TextSearch.png
++%%DATADIR%%/docs/uk/images/Undock.gif
++%%DATADIR%%/docs/uk/images/saveglossary.jpg
++%%DATADIR%%/docs/uk/images/tagged_segment.png
++%%DATADIR%%/docs/uk/images/tagged_segment_target.png
++%%DATADIR%%/docs/uk/index.html
++%%DATADIR%%/docs/uk/installingAndRunning.html
++%%DATADIR%%/docs/uk/instantStartGuide.html
+ %%DATADIR%%/docs/uk/instantStartGuideNoTOC.html
++%%DATADIR%%/docs/uk/languages.html
++%%DATADIR%%/docs/uk/legalNotices.html
++%%DATADIR%%/docs/uk/license.txt
++%%DATADIR%%/docs/uk/menu.html
++%%DATADIR%%/docs/uk/plainText.html
++%%DATADIR%%/docs/uk/preventingDataLoss.html
++%%DATADIR%%/docs/uk/projectProperties.html
++%%DATADIR%%/docs/uk/regexp.html
++%%DATADIR%%/docs/uk/searches.html
++%%DATADIR%%/docs/uk/segmentation.html
++%%DATADIR%%/docs/uk/spellchecker.html
++%%DATADIR%%/docs/uk/translationEditing.html
++%%DATADIR%%/docs/uk/translationMemories.html
++%%DATADIR%%/docs/uk/userInterface.html
++%%DATADIR%%/docs/uk/version_uk.properties
++%%DATADIR%%/docs/uk/website.html
++%%DATADIR%%/docs/uk/xindex.html
+ %%DATADIR%%/docs/zh_CN/OmegaT.css
+ %%DATADIR%%/docs/zh_CN/appendix.LanguageToolPlugin.inOmegaT.html
+ %%DATADIR%%/docs/zh_CN/appendix.ScriptingPlugin.inOmegaT.html
+@@ -1684,10 +1832,10 @@
+ %%DATADIR%%/docs/zh_CN/instantStartGuideNoTOC.html
+ %%DATADIR%%/docs/zh_CN/ix01.html
+ %%DATADIR%%/docs/zh_CN/license.txt
+-%%DATADIR%%/docs/zh_CN/version.properties
++%%DATADIR%%/docs/zh_CN/version_zh_CN.properties
+ %%DATADIR%%/docs/zh_TW/images/NewProject.png
+ %%DATADIR%%/docs/zh_TW/instantStartGuideNoTOC.html
+-%%DATADIR%%/docs/zh_TW/version.properties
++%%DATADIR%%/docs/zh_TW/version_zh_TW.properties
+ %%DATADIR%%/images/OmegaT.gif
+ %%DATADIR%%/images/OmegaT.icns
+ %%DATADIR%%/images/OmegaT.ico
+@@ -1699,77 +1847,193 @@
+ %%DATADIR%%/images/OmegaT.png
+ %%DATADIR%%/images/OmegaT.svg
+ %%DATADIR%%/images/OmegaT_small.gif
++%%DATADIR%%/images/clear-button.svg
+ %%DATADIR%%/images/make_osx_icon.sh
+ %%DATADIR%%/index.html
+ %%DATADIR%%/join.html
+ %%DATADIR%%/lib/ANTLR_3_License.txt
+ %%DATADIR%%/lib/APACHE_LICENSE-2.0.txt
++%%DATADIR%%/lib/DeNormalize_License.txt
+ %%DATADIR%%/lib/EDL-1.0.txt
+-%%DATADIR%%/lib/KoreanAnalyzer-3x-120223.jar
+-%%DATADIR%%/lib/LanguageTool-data.jar
+-%%DATADIR%%/lib/LanguageTool/readme.txt
++%%DATADIR%%/lib/JavaEWAH-1.1.6.jar
+ %%DATADIR%%/lib/Licenses.txt
+ %%DATADIR%%/lib/MPL-1.1.txt
+ %%DATADIR%%/lib/MPL-2.0.txt
+ %%DATADIR%%/lib/ModernUIIcons-license.txt
+-%%DATADIR%%/lib/Morfologik-license.txt
+-%%DATADIR%%/lib/Segment-license.txt
+-%%DATADIR%%/lib/SuperTMXMerge-for_OmegaT.jar
++%%DATADIR%%/lib/RSyntaxTextarea-license.txt
+ %%DATADIR%%/lib/TMate_License.txt
+-%%DATADIR%%/lib/TinySegmenter_LICENSE.txt
+ %%DATADIR%%/lib/Trilead SSH.txt
++%%DATADIR%%/lib/annotations-12.0.jar
++%%DATADIR%%/lib/ant-1.9.13.jar
++%%DATADIR%%/lib/ant-antlr-1.9.13.jar
++%%DATADIR%%/lib/ant-junit-1.9.13.jar
++%%DATADIR%%/lib/ant-launcher-1.9.13.jar
+ %%DATADIR%%/lib/antlr-runtime-3.4.jar
++%%DATADIR%%/lib/apiguardian-api-1.0.0.jar
++%%DATADIR%%/lib/autocomplete-2.5.8.jar
++%%DATADIR%%/lib/beansbinding-1.2.1.jar
++%%DATADIR%%/lib/berkeleylm-1.1.2.jar
+ %%DATADIR%%/lib/cjftransform-1.0.1.jar
+-%%DATADIR%%/lib/commons-io-2.4.jar
+-%%DATADIR%%/lib/commons-lang-2.4.jar
+-%%DATADIR%%/lib/commons-logging-1.1.1.jar
+-%%DATADIR%%/lib/dictzip.jar
+-%%DATADIR%%/lib/diff.jar
++%%DATADIR%%/lib/commons-cli-1.4.jar
++%%DATADIR%%/lib/commons-codec-1.9.jar
++%%DATADIR%%/lib/commons-io-2.5.jar
++%%DATADIR%%/lib/commons-lang-2.6.jar
++%%DATADIR%%/lib/commons-logging-1.2.jar
++%%DATADIR%%/lib/desktopsupport-0.3.0.jar
++%%DATADIR%%/lib/dictzip-lib-0.8.2.jar
++%%DATADIR%%/lib/diffutils-1.2.1.jar
++%%DATADIR%%/lib/fontbox-2.0.15.jar
++%%DATADIR%%/lib/gnudiff4j-1.15.jar
+ %%DATADIR%%/lib/gpl-1.txt
+ %%DATADIR%%/lib/gpl-2.0.txt
+-%%DATADIR%%/lib/groovy-all-2.2.2.jar
+-%%DATADIR%%/lib/htmlparser.jar
++%%DATADIR%%/lib/groovy-2.5.6.jar
++%%DATADIR%%/lib/groovy-ant-2.5.6.jar
++%%DATADIR%%/lib/groovy-cli-commons-2.5.6.jar
++%%DATADIR%%/lib/groovy-cli-picocli-2.5.6.jar
++%%DATADIR%%/lib/groovy-console-2.5.6.jar
++%%DATADIR%%/lib/groovy-datetime-2.5.6.jar
++%%DATADIR%%/lib/groovy-dateutil-2.5.6.jar
++%%DATADIR%%/lib/groovy-docgenerator-2.5.6.jar
++%%DATADIR%%/lib/groovy-groovydoc-2.5.6.jar
++%%DATADIR%%/lib/groovy-groovysh-2.5.6.jar
++%%DATADIR%%/lib/groovy-jmx-2.5.6.jar
++%%DATADIR%%/lib/groovy-json-2.5.6.jar
++%%DATADIR%%/lib/groovy-jsr223-2.5.6.jar
++%%DATADIR%%/lib/groovy-macro-2.5.6.jar
++%%DATADIR%%/lib/groovy-nio-2.5.6.jar
++%%DATADIR%%/lib/groovy-servlet-2.5.6.jar
++%%DATADIR%%/lib/groovy-sql-2.5.6.jar
++%%DATADIR%%/lib/groovy-swing-2.5.6.jar
++%%DATADIR%%/lib/groovy-templates-2.5.6.jar
++%%DATADIR%%/lib/groovy-test-2.5.6.jar
++%%DATADIR%%/lib/groovy-test-junit5-2.5.6.jar
++%%DATADIR%%/lib/groovy-testng-2.5.6.jar
++%%DATADIR%%/lib/groovy-xml-2.5.6.jar
++%%DATADIR%%/lib/guava-16.0.1.jar
++%%DATADIR%%/lib/hamcrest-core-1.3.jar
++%%DATADIR%%/lib/hppc-0.7.1.jar
++%%DATADIR%%/lib/htmlparser-1.5.jar
++%%DATADIR%%/lib/httpclient-4.5.2.jar
++%%DATADIR%%/lib/httpcore-4.4.4.jar
++%%DATADIR%%/lib/hunspell-native-libs-2.9.jar
+ %%DATADIR%%/lib/ictclas4j-1.0.1.jar
++%%DATADIR%%/lib/ivy-2.4.0.jar
++%%DATADIR%%/lib/jasypt-1.9.2.jar
++%%DATADIR%%/lib/javax.activation-api-1.2.0.jar
++%%DATADIR%%/lib/jaxb-api-2.3.1.jar
++%%DATADIR%%/lib/jaxb-core-2.3.0.1.jar
++%%DATADIR%%/lib/jaxb-impl-2.3.2.jar
++%%DATADIR%%/lib/jcommander-1.72.jar
++%%DATADIR%%/lib/jline-2.14.6.jar
+ %%DATADIR%%/lib/jmyspell-core-1.0.0-beta-2.jar
+-%%DATADIR%%/lib/jna.jar
+-%%DATADIR%%/lib/jsch-0.1.49.jar
++%%DATADIR%%/lib/jna-4.1.0.jar
++%%DATADIR%%/lib/jna-platform-4.1.0.jar
++%%DATADIR%%/lib/jsch-0.1.54.jar
++%%DATADIR%%/lib/jsch-agent-proxy_License.txt
++%%DATADIR%%/lib/jsch.agentproxy.connector-factory-0.0.9.jar
++%%DATADIR%%/lib/jsch.agentproxy.core-0.0.9.jar
++%%DATADIR%%/lib/jsch.agentproxy.jsch-0.0.9.jar
++%%DATADIR%%/lib/jsch.agentproxy.pageant-0.0.9.jar
++%%DATADIR%%/lib/jsch.agentproxy.sshagent-0.0.9.jar
++%%DATADIR%%/lib/jsch.agentproxy.svnkit-trilead-ssh2-0.0.9.jar
++%%DATADIR%%/lib/jsch.agentproxy.usocket-jna-0.0.9.jar
++%%DATADIR%%/lib/jsch.agentproxy.usocket-nc-0.0.9.jar
+ %%DATADIR%%/lib/jsch_License.txt
+-%%DATADIR%%/lib/juniversalchardet-1.0.3.jar
+-%%DATADIR%%/lib/jwordsplitter-3.4.jar
+-%%DATADIR%%/lib/languagetool-core-2.2.jar
++%%DATADIR%%/lib/jsonic-1.2.11.jar
++%%DATADIR%%/lib/junit-4.12.jar
++%%DATADIR%%/lib/junit-jupiter-api-5.3.2.jar
++%%DATADIR%%/lib/junit-jupiter-engine-5.3.2.jar
++%%DATADIR%%/lib/junit-platform-commons-1.3.2.jar
++%%DATADIR%%/lib/junit-platform-engine-1.3.2.jar
++%%DATADIR%%/lib/junit-platform-launcher-1.3.2.jar
++%%DATADIR%%/lib/juniversalchardet-2.3.0.jar
++%%DATADIR%%/lib/jwordsplitter-4.1.jar
++%%DATADIR%%/lib/jzlib-1.1.1.jar
++%%DATADIR%%/lib/language-all-3.5.jar
++%%DATADIR%%/lib/language-ast-3.5.jar
++%%DATADIR%%/lib/language-be-3.5.jar
++%%DATADIR%%/lib/language-br-3.5.jar
++%%DATADIR%%/lib/language-ca-3.5.jar
++%%DATADIR%%/lib/language-da-3.5.jar
++%%DATADIR%%/lib/language-de-3.5.jar
++%%DATADIR%%/lib/language-de-DE-x-simple-language-3.5.jar
++%%DATADIR%%/lib/language-detector-0.5.jar
++%%DATADIR%%/lib/language-el-3.5.jar
++%%DATADIR%%/lib/language-en-3.5.jar
++%%DATADIR%%/lib/language-eo-3.5.jar
++%%DATADIR%%/lib/language-es-3.5.jar
++%%DATADIR%%/lib/language-fa-3.5.jar
++%%DATADIR%%/lib/language-fr-3.5.jar
++%%DATADIR%%/lib/language-gl-3.5.jar
++%%DATADIR%%/lib/language-is-3.5.jar
++%%DATADIR%%/lib/language-it-3.5.jar
++%%DATADIR%%/lib/language-ja-3.5.jar
++%%DATADIR%%/lib/language-km-3.5.jar
++%%DATADIR%%/lib/language-lt-3.5.jar
++%%DATADIR%%/lib/language-ml-3.5.jar
++%%DATADIR%%/lib/language-nl-3.5.jar
++%%DATADIR%%/lib/language-pl-3.5.jar
++%%DATADIR%%/lib/language-pt-3.5.jar
++%%DATADIR%%/lib/language-ro-3.5.jar
++%%DATADIR%%/lib/language-ru-3.5.jar
++%%DATADIR%%/lib/language-sk-3.5.jar
++%%DATADIR%%/lib/language-sl-3.5.jar
++%%DATADIR%%/lib/language-sv-3.5.jar
++%%DATADIR%%/lib/language-ta-3.5.jar
++%%DATADIR%%/lib/language-tl-3.5.jar
++%%DATADIR%%/lib/language-uk-3.5.jar
++%%DATADIR%%/lib/language-zh-3.5.jar
++%%DATADIR%%/lib/languagesupport-2.5.8.jar
++%%DATADIR%%/lib/languagetool-core-3.5.jar
+ %%DATADIR%%/lib/lgpl-2.1.txt
+-%%DATADIR%%/lib/lib-mnemonics.jar
+-%%DATADIR%%/lib/lucene-analyzers-3.6.2.jar
+-%%DATADIR%%/lib/lucene-core-3.6.2.jar
+-%%DATADIR%%/lib/lucene-gosen-2.0.2-ipadic.jar
+-%%DATADIR%%/lib/lucene-kuromoji-3.6.2.jar
+-%%DATADIR%%/lib/lucene-smartcn-3.6.2.jar
+-%%DATADIR%%/lib/morfologik-fsa-1.5.4.jar
+-%%DATADIR%%/lib/morfologik-speller-1.5.4.jar
+-%%DATADIR%%/lib/morfologik-stemming-1.5.4.jar
+-%%DATADIR%%/lib/org.eclipse.jgit-3.7.1.201504261725-r.jar
+-%%DATADIR%%/lib/pdfbox-app-1.8.1.jar
+-%%DATADIR%%/lib/segment-1.4.1.jar
+-%%DATADIR%%/lib/sequence-library-1.0.2.jar
++%%DATADIR%%/lib/lib-mnemonics-1.0.jar
++%%DATADIR%%/lib/lucene-analyzers-common-5.2.1.jar
++%%DATADIR%%/lib/lucene-analyzers-kuromoji-5.2.1.jar
++%%DATADIR%%/lib/lucene-analyzers-smartcn-5.2.1.jar
++%%DATADIR%%/lib/lucene-analyzers-stempel-5.2.1.jar
++%%DATADIR%%/lib/lucene-backward-codecs-5.2.1.jar
++%%DATADIR%%/lib/lucene-core-5.2.1-1.jar
++%%DATADIR%%/lib/lucene-gosen-5.0.0-ipadic.jar
++%%DATADIR%%/lib/mALIGNa_LICENSE.txt
++%%DATADIR%%/lib/maligna-3.0.0.jar
++%%DATADIR%%/lib/morfologik-fsa-2.1.0.jar
++%%DATADIR%%/lib/morfologik-fsa-builders-2.1.0.jar
++%%DATADIR%%/lib/morfologik-polish-2.0.0.jar
++%%DATADIR%%/lib/morfologik-speller-2.1.0.jar
++%%DATADIR%%/lib/morfologik-stemming-2.1.0.jar
++%%DATADIR%%/lib/morphology-el-1.0.0.jar
++%%DATADIR%%/lib/opennlp-chunk-models-1.5.jar
++%%DATADIR%%/lib/opennlp-postag-models-1.5.jar
++%%DATADIR%%/lib/opennlp-tokenize-models-1.5.jar
++%%DATADIR%%/lib/opennlp-tools-1.6.0.jar
++%%DATADIR%%/lib/openregex-1.1.1.jar
++%%DATADIR%%/lib/opentest4j-1.1.1.jar
++%%DATADIR%%/lib/org.eclipse.jgit-4.11.8.201904181247-r.jar
++%%DATADIR%%/lib/pdfbox-2.0.15.jar
++%%DATADIR%%/lib/picocli-3.9.2.jar
++%%DATADIR%%/lib/qdox-1.12.1.jar
++%%DATADIR%%/lib/regex-weburl.js-license.txt
++%%DATADIR%%/lib/rstaui-2.5.7.jar
++%%DATADIR%%/lib/rsyntaxtextarea-2.5.8.jar
++%%DATADIR%%/lib/segment-2.0.0.jar
++%%DATADIR%%/lib/sequence-library-1.0.3.jar
+ %%DATADIR%%/lib/sequence-library_License.txt
+-%%DATADIR%%/lib/slf4j-api-1.7.7.jar
+-%%DATADIR%%/lib/slf4j-jdk14-1.7.7.jar
++%%DATADIR%%/lib/slf4j-api-1.7.25.jar
++%%DATADIR%%/lib/slf4j-jdk14-1.7.25.jar
+ %%DATADIR%%/lib/slf4j_LICENSE.txt
+ %%DATADIR%%/lib/sqljet-1.1.10.jar
+-%%DATADIR%%/lib/svnkit-1.8.5.jar
+-%%DATADIR%%/lib/swing-layout-1.0.4.jar
+-%%DATADIR%%/lib/tinysegmenter.jar
+-%%DATADIR%%/lib/trilead-ssh2-1.0.0-build217.jar
+-%%DATADIR%%/lib/vldocking-3.0.5-SNAPSHOT.jar
++%%DATADIR%%/lib/supertmxmerge-2.0.1.jar
++%%DATADIR%%/lib/svnkit-1.8.14.jar
++%%DATADIR%%/lib/testng-6.13.1.jar
++%%DATADIR%%/lib/trie4j-0.9.8.jar
++%%DATADIR%%/lib/trilead-ssh2-1.0.0-build221.jar
++%%DATADIR%%/lib/vldocking-3.0.5.jar
++%%DATADIR%%/lib/ws-commons-util-1.0.2.jar
++%%DATADIR%%/lib/xml-apis-1.0.b2.jar
++%%DATADIR%%/lib/xmlrpc-client-3.1.3.jar
++%%DATADIR%%/lib/xmlrpc-common-3.1.3.jar
+ %%DATADIR%%/linux-install.sh
+-%%DATADIR%%/native/hunspell-win32.dll
+-%%DATADIR%%/native/hunspell-win64.dll
+-%%DATADIR%%/native/libhunspell-linux32.so
+-%%DATADIR%%/native/libhunspell-linux64.so
+-%%DATADIR%%/native/libhunspell-macos32.dylib
+-%%DATADIR%%/native/libhunspell-macos64.dylib
+ %%DATADIR%%/omegat.kaptn
+-%%DATADIR%%/omegat.prefs
+ %%DATADIR%%/plugins/Readme-plugins.txt
+ %%DATADIR%%/readme.txt
+ %%DATADIR%%/readme_ar.txt
+@@ -1783,6 +2047,7 @@
+ %%DATADIR%%/readme_eu.txt
+ %%DATADIR%%/readme_fr.txt
+ %%DATADIR%%/readme_gl.txt
++%%DATADIR%%/readme_hr.txt
+ %%DATADIR%%/readme_hu.txt
+ %%DATADIR%%/readme_ia.txt
+ %%DATADIR%%/readme_it.txt
+@@ -1809,7 +2074,10 @@
+ %%DATADIR%%/scripts/check_same_segments.groovy
+ %%DATADIR%%/scripts/check_same_segments.js
+ %%DATADIR%%/scripts/currency_translate.groovy
++%%DATADIR%%/scripts/external_spellcheck.groovy
++%%DATADIR%%/scripts/extract_text_content.groovy
+ %%DATADIR%%/scripts/gui_scripting.groovy
++%%DATADIR%%/scripts/issue_provider_sample.groovy
+ %%DATADIR%%/scripts/keybinding.groovy
+ %%DATADIR%%/scripts/modify_segment.groovy
+ %%DATADIR%%/scripts/nbsp.groovy
+@@ -1824,16 +2092,25 @@
+ %%DATADIR%%/scripts/properties/check_rules_cs.properties
+ %%DATADIR%%/scripts/properties/check_rules_eu.properties
+ %%DATADIR%%/scripts/properties/check_rules_fr.properties
++%%DATADIR%%/scripts/properties/check_rules_hr.properties
+ %%DATADIR%%/scripts/properties/check_rules_ia.properties
+ %%DATADIR%%/scripts/properties/check_rules_it.properties
+ %%DATADIR%%/scripts/properties/check_rules_ja.properties
+ %%DATADIR%%/scripts/properties/check_rules_nl.properties
+ %%DATADIR%%/scripts/properties/check_rules_no.properties
++%%DATADIR%%/scripts/properties/check_rules_pl.properties
+ %%DATADIR%%/scripts/properties/check_rules_pt_BR.properties
+ %%DATADIR%%/scripts/properties/check_rules_ru.properties
++%%DATADIR%%/scripts/properties/check_rules_sv.properties
++%%DATADIR%%/scripts/properties/check_rules_tr.properties
+ %%DATADIR%%/scripts/properties/check_rules_uk.properties
++%%DATADIR%%/scripts/properties/check_rules_zh_CN.properties
+ %%DATADIR%%/scripts/properties/currency_translate_ja.properties
++%%DATADIR%%/scripts/properties/extract_text_content.properties
++%%DATADIR%%/scripts/properties/extract_text_content_fr.properties
++%%DATADIR%%/scripts/properties/extract_text_content_tr.properties
+ %%DATADIR%%/scripts/properties/gui_scripting_ja.properties
++%%DATADIR%%/scripts/properties/issue_provider_sample.properties
+ %%DATADIR%%/scripts/properties/keybinding_ja.properties
+ %%DATADIR%%/scripts/properties/modify_segment_ja.properties
+ %%DATADIR%%/scripts/properties/nbsp.properties
+@@ -1840,11 +2117,17 @@
+ %%DATADIR%%/scripts/properties/nbsp_be.properties
+ %%DATADIR%%/scripts/properties/nbsp_cs.properties
+ %%DATADIR%%/scripts/properties/nbsp_fr.properties
++%%DATADIR%%/scripts/properties/nbsp_hr.properties
+ %%DATADIR%%/scripts/properties/nbsp_ia.properties
+ %%DATADIR%%/scripts/properties/nbsp_it.properties
+ %%DATADIR%%/scripts/properties/nbsp_ja.properties
+ %%DATADIR%%/scripts/properties/nbsp_nl.properties
+ %%DATADIR%%/scripts/properties/nbsp_no.properties
++%%DATADIR%%/scripts/properties/nbsp_pl.properties
++%%DATADIR%%/scripts/properties/nbsp_pt_BR.properties
++%%DATADIR%%/scripts/properties/nbsp_sv.properties
++%%DATADIR%%/scripts/properties/nbsp_tr.properties
++%%DATADIR%%/scripts/properties/nbsp_zh_CN.properties
+ %%DATADIR%%/scripts/properties/open_current_file_ja.properties
+ %%DATADIR%%/scripts/properties/open_folder_ja.properties
+ %%DATADIR%%/scripts/properties/open_glossary_ja.properties
+@@ -1854,13 +2137,19 @@
+ %%DATADIR%%/scripts/properties/replace_strip_tags_be.properties
+ %%DATADIR%%/scripts/properties/replace_strip_tags_cs.properties
+ %%DATADIR%%/scripts/properties/replace_strip_tags_fr.properties
++%%DATADIR%%/scripts/properties/replace_strip_tags_hr.properties
+ %%DATADIR%%/scripts/properties/replace_strip_tags_ia.properties
+ %%DATADIR%%/scripts/properties/replace_strip_tags_it.properties
+ %%DATADIR%%/scripts/properties/replace_strip_tags_ja.properties
+ %%DATADIR%%/scripts/properties/replace_strip_tags_nl.properties
+ %%DATADIR%%/scripts/properties/replace_strip_tags_no.properties
++%%DATADIR%%/scripts/properties/replace_strip_tags_pl.properties
++%%DATADIR%%/scripts/properties/replace_strip_tags_pt_BR.properties
+ %%DATADIR%%/scripts/properties/replace_strip_tags_ru.properties
++%%DATADIR%%/scripts/properties/replace_strip_tags_sv.properties
++%%DATADIR%%/scripts/properties/replace_strip_tags_tr.properties
+ %%DATADIR%%/scripts/properties/replace_strip_tags_uk.properties
++%%DATADIR%%/scripts/properties/replace_strip_tags_zh_CN.properties
+ %%DATADIR%%/scripts/properties/replace_with_match_no_tags_ja.properties
+ %%DATADIR%%/scripts/properties/search_replace.properties
+ %%DATADIR%%/scripts/properties/search_replace_be.properties
+@@ -1867,13 +2156,18 @@
+ %%DATADIR%%/scripts/properties/search_replace_cs.properties
+ %%DATADIR%%/scripts/properties/search_replace_eu.properties
+ %%DATADIR%%/scripts/properties/search_replace_fr.properties
++%%DATADIR%%/scripts/properties/search_replace_hr.properties
+ %%DATADIR%%/scripts/properties/search_replace_ia.properties
+ %%DATADIR%%/scripts/properties/search_replace_it.properties
+ %%DATADIR%%/scripts/properties/search_replace_ja.properties
+ %%DATADIR%%/scripts/properties/search_replace_nl.properties
+ %%DATADIR%%/scripts/properties/search_replace_no.properties
++%%DATADIR%%/scripts/properties/search_replace_pl.properties
+ %%DATADIR%%/scripts/properties/search_replace_pt_BR.properties
+ %%DATADIR%%/scripts/properties/search_replace_ru.properties
++%%DATADIR%%/scripts/properties/search_replace_sv.properties
++%%DATADIR%%/scripts/properties/search_replace_tr.properties
++%%DATADIR%%/scripts/properties/search_replace_zh_CN.properties
+ %%DATADIR%%/scripts/properties/show_same_segments_ja.properties
+ %%DATADIR%%/scripts/properties/spellcheck.properties
+ %%DATADIR%%/scripts/properties/spellcheck_be.properties
+@@ -1880,47 +2174,56 @@
+ %%DATADIR%%/scripts/properties/spellcheck_cs.properties
+ %%DATADIR%%/scripts/properties/spellcheck_eu.properties
+ %%DATADIR%%/scripts/properties/spellcheck_fr.properties
++%%DATADIR%%/scripts/properties/spellcheck_hr.properties
+ %%DATADIR%%/scripts/properties/spellcheck_ia.properties
+ %%DATADIR%%/scripts/properties/spellcheck_it.properties
+ %%DATADIR%%/scripts/properties/spellcheck_ja.properties
+ %%DATADIR%%/scripts/properties/spellcheck_nl.properties
+ %%DATADIR%%/scripts/properties/spellcheck_no.properties
++%%DATADIR%%/scripts/properties/spellcheck_pl.properties
+ %%DATADIR%%/scripts/properties/spellcheck_pt_BR.properties
+ %%DATADIR%%/scripts/properties/spellcheck_ru.properties
++%%DATADIR%%/scripts/properties/spellcheck_sv.properties
++%%DATADIR%%/scripts/properties/spellcheck_tr.properties
+ %%DATADIR%%/scripts/properties/spellcheck_uk.properties
++%%DATADIR%%/scripts/properties/spellcheck_zh_CN.properties
+ %%DATADIR%%/scripts/properties/strip_bidi_marks.properties
+ %%DATADIR%%/scripts/properties/strip_bidi_marks_be.properties
+ %%DATADIR%%/scripts/properties/strip_bidi_marks_cs.properties
+ %%DATADIR%%/scripts/properties/strip_bidi_marks_fr.properties
++%%DATADIR%%/scripts/properties/strip_bidi_marks_hr.properties
+ %%DATADIR%%/scripts/properties/strip_bidi_marks_ia.properties
+ %%DATADIR%%/scripts/properties/strip_bidi_marks_it.properties
+ %%DATADIR%%/scripts/properties/strip_bidi_marks_ja.properties
+ %%DATADIR%%/scripts/properties/strip_bidi_marks_nl.properties
+ %%DATADIR%%/scripts/properties/strip_bidi_marks_no.properties
++%%DATADIR%%/scripts/properties/strip_bidi_marks_pl.properties
++%%DATADIR%%/scripts/properties/strip_bidi_marks_pt_BR.properties
++%%DATADIR%%/scripts/properties/strip_bidi_marks_sv.properties
++%%DATADIR%%/scripts/properties/strip_bidi_marks_tr.properties
++%%DATADIR%%/scripts/properties/strip_bidi_marks_zh_CN.properties
+ %%DATADIR%%/scripts/properties/svn_cleanup_selected.properties
+ %%DATADIR%%/scripts/properties/svn_cleanup_selected_be.properties
+ %%DATADIR%%/scripts/properties/svn_cleanup_selected_cs.properties
+-%%DATADIR%%/scripts/properties/svn_cleanup_selected_eu.properties
+ %%DATADIR%%/scripts/properties/svn_cleanup_selected_fr.properties
++%%DATADIR%%/scripts/properties/svn_cleanup_selected_hr.properties
+ %%DATADIR%%/scripts/properties/svn_cleanup_selected_ia.properties
+ %%DATADIR%%/scripts/properties/svn_cleanup_selected_it.properties
+-%%DATADIR%%/scripts/properties/svn_cleanup_selected_ja.properties
+ %%DATADIR%%/scripts/properties/svn_cleanup_selected_nl.properties
+-%%DATADIR%%/scripts/properties/svn_cleanup_selected_no.properties
+-%%DATADIR%%/scripts/properties/svn_cleanup_selected_pt_BR.properties
+ %%DATADIR%%/scripts/properties/svn_cleanup_selected_ru.properties
+-%%DATADIR%%/scripts/properties/svn_cleanup_selected_uk.properties
+-%%DATADIR%%/scripts/properties/svn_clear_auth.properties
+-%%DATADIR%%/scripts/properties/svn_clear_auth_be.properties
+-%%DATADIR%%/scripts/properties/svn_clear_auth_cs.properties
+-%%DATADIR%%/scripts/properties/svn_clear_auth_fr.properties
+-%%DATADIR%%/scripts/properties/svn_clear_auth_ia.properties
+-%%DATADIR%%/scripts/properties/svn_clear_auth_it.properties
+-%%DATADIR%%/scripts/properties/svn_clear_auth_ja.properties
+-%%DATADIR%%/scripts/properties/svn_clear_auth_nl.properties
+-%%DATADIR%%/scripts/properties/svn_clear_auth_no.properties
+-%%DATADIR%%/scripts/properties/svn_commit_segmentation_ja.properties
+-%%DATADIR%%/scripts/properties/svn_commit_source_files_ja.properties
++%%DATADIR%%/scripts/properties/svn_cleanup_selected_sv.properties
++%%DATADIR%%/scripts/properties/svn_cleanup_selected_tr.properties
++%%DATADIR%%/scripts/properties/svn_cleanup_selected_zh_CN.properties
++%%DATADIR%%/scripts/properties/tagwipe.properties
++%%DATADIR%%/scripts/properties/tagwipe_be.properties
++%%DATADIR%%/scripts/properties/tagwipe_cs.properties
++%%DATADIR%%/scripts/properties/tagwipe_fr.properties
++%%DATADIR%%/scripts/properties/tagwipe_ia.properties
++%%DATADIR%%/scripts/properties/tagwipe_it.properties
++%%DATADIR%%/scripts/properties/tagwipe_nl.properties
++%%DATADIR%%/scripts/properties/tagwipe_ru.properties
++%%DATADIR%%/scripts/properties/tagwipe_tr.properties
++%%DATADIR%%/scripts/properties/tagwipe_zh_CN.properties
+ %%DATADIR%%/scripts/properties/toolbar_ja.properties
+ %%DATADIR%%/scripts/readme.txt
+ %%DATADIR%%/scripts/replace_strip_tags.groovy
+@@ -1930,8 +2233,6 @@
+ %%DATADIR%%/scripts/spellcheck.groovy
+ %%DATADIR%%/scripts/strip_bidi_marks.groovy
+ %%DATADIR%%/scripts/svn_cleanup_selected.groovy
+-%%DATADIR%%/scripts/svn_clear_auth.groovy
+-%%DATADIR%%/scripts/svn_commit_segmentation.groovy
+-%%DATADIR%%/scripts/svn_commit_source_files.groovy
+ %%DATADIR%%/scripts/switch_colour_theme.js
++%%DATADIR%%/scripts/tagwipe.groovy
+ %%DATADIR%%/scripts/toolbar.groovy
