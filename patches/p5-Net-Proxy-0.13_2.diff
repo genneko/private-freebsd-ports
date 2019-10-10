@@ -42,9 +42,9 @@ Index: files/patch-lib_Net_Proxy_Connector.pm
 ++    if( $self->{progname} ){
 ++        my $ok = hosts_ctl($self->{progname}, $sock->peerhostname, $sock->peerhost);
 ++        if( $ok ){
-++            Net::Proxy->error(sprintf("Access permitted by libwrap: %s [%s]", $sock->peerhostname, $sock->peerhost));
+++            Net::Proxy->error(sprintf("Access to [%s] allowed by libwrap: %s [%s]", $self->{progname}, $sock->peerhostname, $sock->peerhost));
 ++        }else{
-++            Net::Proxy->error(sprintf("Access denied by libwrap: %s [%s]", $sock->peerhostname, $sock->peerhost));
+++            Net::Proxy->error(sprintf("Access to [%s] denied by libwrap: %s [%s]", $self->{progname}, $sock->peerhostname, $sock->peerhost));
 ++            return;
 ++        }
 ++    }

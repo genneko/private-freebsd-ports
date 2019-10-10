@@ -8,7 +8,6 @@
 *.rej
 *.orig
 *.sw[p-z]
-/devel/gettext
-/devel/gettext-tools
-/net/onedrive
-/net/p5-Net-Proxy
+/devel
+/net
+/net-im
