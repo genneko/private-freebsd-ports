@@ -42,7 +42,7 @@ Index: files/patch-lib_Net_Proxy_Connector.pm
 ++    if( $self->{progname} ){
 ++        my $ok = hosts_ctl($self->{progname}, $sock->peerhostname, $sock->peerhost);
 ++        if( $ok ){
-++            Net::Proxy->error(sprintf("Access to [%s] allowed by libwrap: %s [%s]", $self->{progname}, $sock->peerhostname, $sock->peerhost));
+++            Net::Proxy->notice(sprintf("Access to [%s] allowed by libwrap: %s [%s]", $self->{progname}, $sock->peerhostname, $sock->peerhost));
 ++        }else{
 ++            Net::Proxy->error(sprintf("Access to [%s] denied by libwrap: %s [%s]", $self->{progname}, $sock->peerhostname, $sock->peerhost));
 ++            return;
@@ -63,6 +63,46 @@ Index: files/patch-lib_Net_Proxy_Connector.pm
 +         LocalPort => $self->{port},
 
 Property changes on: files/patch-lib_Net_Proxy_Connector.pm
+___________________________________________________________________
+Added: fbsd:nokeywords
+## -0,0 +1 ##
++yes
+\ No newline at end of property
+Added: svn:eol-style
+## -0,0 +1 ##
++native
+\ No newline at end of property
+Added: svn:mime-type
+## -0,0 +1 ##
++text/plain
+\ No newline at end of property
+Index: files/patch-lib_Net_Proxy_Connector_ssl.pm
+===================================================================
+--- files/patch-lib_Net_Proxy_Connector_ssl.pm	(nonexistent)
++++ files/patch-lib_Net_Proxy_Connector_ssl.pm	(working copy)
+@@ -0,0 +1,20 @@
++--- lib/Net/Proxy/Connector/ssl.pm.orig	2019-10-11 00:10:29 UTC
+++++ lib/Net/Proxy/Connector/ssl.pm
++@@ -42,7 +42,7 @@ sub listen {
++ 
++     # or as a standard TCP socket, which may be upgraded later
++     else {
++-        $sock = IO::Socket::INET->new(
+++        $sock = IO::Socket::IP->new(
++             Listen    => 1,
++             LocalAddr => $self->{host},
++             LocalPort => $self->{port},
++@@ -101,7 +101,7 @@ sub connect {
++ 
++     # or as a standard TCP socket, which may be upgraded later
++     else {
++-        $sock = IO::Socket::INET->new(
+++        $sock = IO::Socket::IP->new(
++             PeerAddr => $self->{host},
++             PeerPort => $self->{port},
++             Proto    => 'tcp',
+
+Property changes on: files/patch-lib_Net_Proxy_Connector_ssl.pm
 ___________________________________________________________________
 Added: fbsd:nokeywords
 ## -0,0 +1 ##
