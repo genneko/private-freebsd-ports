@@ -1,0 +1,206 @@
+Index: Makefile
+===================================================================
+--- Makefile	(revision 515311)
++++ Makefile	(working copy)
+@@ -2,8 +2,7 @@
+ 
+ PORTNAME=	onedrive
+ DISTVERSIONPREFIX=	v
+-DISTVERSION=	2.3.3
+-PORTREVISION=	1
++DISTVERSION=	2.3.10
+ CATEGORIES=	net
+ 
+ MAINTAINER=	hiroo.ono+freebsd@gmail.com
+@@ -21,19 +20,20 @@
+ GH_ACCOUNT=	abraunegg
+ 
+ PKGCONFIG=		pkgconf
+-MAKE_ARGS=		DC=ldc2
+-INSTALL_TARGET=		install.noservice
++INSTALL_TARGET=		install
+ 
+ OPTIONS_DEFINE=		DOCS NOTIFY BASH ZSH
+ OPTIONS_DEFAULT=	DOCS NOTIFY BASH ZSH
+ OPTIONS_SUB=		yes
+ 
+-DOCFILES=		README.md README.Office365.md config CHANGELOG.md
++DOCFILES=		README.md config LICENSE CHANGELOG.md docs/Docker.md docs/INSTALL.md docs/Office365.md docs/USAGE.md
+ 
+-NOTIFY_VARS=		NOTIFICATIONS=1
++GNU_CONFIGURE=		yes
++
+ NOTIFY_USES=		gnome
+-NOTIFY_USE=		GNOME=glib20
++NOTIFY_USE=		GNOME=glib20,gdkpixbuf2
+ NOTIFY_LIB_DEPENDS=	libnotify.so:devel/libnotify
++NOTIFY_CONFIGURE_ENABLE=	notifications
+ 
+ BASH_COMPLETION_DIR=	${LOCALBASE}/share/bash-completion/completions
+ ZSH_COMPLETION_DIR=	${LOCALBASE}/share/zsh/site-functions
+@@ -49,12 +49,12 @@
+ 
+ do-install-BASH-on:
+ 	@${MKDIR} ${STAGEDIR}${BASH_COMPLETION_DIR}
+-	${INSTALL_DATA} ${WRKSRC}/completions/complete.bash \
++	${INSTALL_DATA} ${WRKSRC}/contrib/completions/complete.bash \
+ 		${STAGEDIR}${BASH_COMPLETION_DIR}/onedrive
+ 
+ do-install-ZSH-on:
+ 	@${MKDIR} ${STAGEDIR}${ZSH_COMPLETION_DIR}
+-	${INSTALL_DATA} ${WRKSRC}/completions/complete.zsh \
++	${INSTALL_DATA} ${WRKSRC}/contrib/completions/complete.zsh \
+ 		${STAGEDIR}${ZSH_COMPLETION_DIR}/_onedrive
+ 
+ post-install-DOCS-on:
+Index: distinfo
+===================================================================
+--- distinfo	(revision 515311)
++++ distinfo	(working copy)
+@@ -1,3 +1,3 @@
+-TIMESTAMP = 1556052070
+-SHA256 (abraunegg-onedrive-v2.3.3_GH0.tar.gz) = 9ee4ea4b3ea880f7624761d053bbb09a2465706685e9ed258c50925ff5e32377
+-SIZE (abraunegg-onedrive-v2.3.3_GH0.tar.gz) = 599457
++TIMESTAMP = 1571878191
++SHA256 (abraunegg-onedrive-v2.3.10_GH0.tar.gz) = f522205821c827e327f356d06257925ccfaa87b179c94957706646bd3b6a6507
++SIZE (abraunegg-onedrive-v2.3.10_GH0.tar.gz) = 656374
+Index: files/patch-Makefile
+===================================================================
+--- files/patch-Makefile	(revision 515311)
++++ files/patch-Makefile	(nonexistent)
+@@ -1,40 +0,0 @@
+---- Makefile.orig	2019-04-16 02:18:26 UTC
+-+++ Makefile
+-@@ -7,8 +7,9 @@ gitversion := $(shell if [ -f .git/HEAD ] ; then echo 
+- 
+- ifeq ($(pkgconfig),1)
+- LIBS = $(shell pkg-config --libs sqlite3 libcurl)
+-+LIBS += $(shell pkg-config --libs libinotify)
+- else
+--LIBS = -lcurl -lsqlite3
+-+LIBS = -lcurl -lsqlite3 -linotify
+- endif
+- ifeq ($(notifications),1)
+- NOTIF_VERSIONS = -version=NoPragma -version=NoGdk -version=Notifications
+-@@ -74,7 +75,8 @@ SOURCES = \
+- 	src/sync.d \
+- 	src/upload.d \
+- 	src/util.d \
+--	src/progress.d
+-+	src/progress.d \
+-+	src/freebsd_inotify.d
+- 
+- ifeq ($(notifications),1)
+- SOURCES += src/notifications/notify.d src/notifications/dnotify.d
+-@@ -90,11 +92,12 @@ onedrive: version $(SOURCES)
+- 
+- install.noservice: onedrive onedrive.1
+- 	mkdir -p $(DESTDIR)/var/log/onedrive
+--	chown root.users $(DESTDIR)/var/log/onedrive
+-+	# chown root.users $(DESTDIR)/var/log/onedrive
+- 	chmod 0775 $(DESTDIR)/var/log/onedrive
+--	install -D onedrive $(DESTDIR)$(PREFIX)/bin/onedrive
+--	install -D onedrive.1 $(DESTDIR)$(MANDIR)/onedrive.1
+--	install -D -m 644 logrotate/onedrive.logrotate $(DESTDIR)/etc/logrotate.d/onedrive
+-+	install onedrive $(DESTDIR)$(PREFIX)/bin/onedrive
+-+	# install -D onedrive.1 $(DESTDIR)$(MANDIR)/onedrive.1
+-+	install -d $(DESTDIR)$(PREFIX)/etc/logrotate.d
+-+	install -m 644 logrotate/onedrive.logrotate $(DESTDIR)$(PREFIX)/etc/logrotate.d/onedrive
+- 
+- install: all install.noservice
+- 	for i in $(DOCFILES) ; do install -D -m 644 $$i $(DESTDIR)$(DOCDIR)/$$i ; done
+
+Property changes on: files/patch-Makefile
+___________________________________________________________________
+Deleted: fbsd:nokeywords
+## -1 +0,0 ##
+-yes
+\ No newline at end of property
+Deleted: svn:eol-style
+## -1 +0,0 ##
+-native
+\ No newline at end of property
+Deleted: svn:mime-type
+## -1 +0,0 ##
+-text/plain
+\ No newline at end of property
+Index: files/patch-Makefile.in
+===================================================================
+--- files/patch-Makefile.in	(nonexistent)
++++ files/patch-Makefile.in	(working copy)
+@@ -0,0 +1,33 @@
++--- Makefile.in.orig	2019-08-31 20:48:20 UTC
+++++ Makefile.in
++@@ -67,6 +67,7 @@ endif
++ 
++ SOURCES = \
++ 	src/config.d \
+++	src/freebsd_inotify.d \
++ 	src/itemdb.d \
++ 	src/log.d \
++ 	src/main.d \
++@@ -97,14 +98,16 @@ distclean: clean
++ 	      $(system_unit_files) $(user_unit_files)
++ 
++ onedrive: version $(SOURCES)
++-	$(DC) $(DCFLAGS) $(addprefix -L,$(curl_LIBS)) $(addprefix -L,$(sqlite_LIBS)) $(addprefix -L,$(notify_LIBS)) -L-ldl $(SOURCES) -of$@
+++	$(DC) $(DCFLAGS) $(addprefix -L,$(curl_LIBS)) $(addprefix -L,$(sqlite_LIBS)) $(addprefix -L,$(notify_LIBS)) -L-ldl -L-linotify $(SOURCES) -of$@
++ 
++ install: all
++-	$(INSTALL) -D onedrive $(DESTDIR)$(bindir)/onedrive
++-	$(INSTALL) -D onedrive.1 $(DESTDIR)$(mandir)/man1/onedrive.1
++-	$(INSTALL) -D -m 644 contrib/logrotate/onedrive.logrotate $(DESTDIR)$(sysconfdir)/logrotate.d/onedrive
++-	mkdir -p $(DESTDIR)$(docdir)
++-	$(INSTALL) -D -m 644 $(DOCFILES) $(DESTDIR)$(docdir)
+++	$(INSTALL) -s onedrive $(DESTDIR)$(bindir)/onedrive
+++	#$(INSTALL) -D onedrive.1 $(DESTDIR)$(mandir)/man1/onedrive.1
+++	$(INSTALL) -d -m 0775 $(DESTDIR)/var/log/onedrive
+++	$(INSTALL) -d $(DESTDIR)$(sysconfdir)/logrotate.d
+++	$(INSTALL) -m 644 contrib/logrotate/onedrive.logrotate $(DESTDIR)$(sysconfdir)/logrotate.d/onedrive
+++	# mkdir -p $(DESTDIR)$(docdir)
+++	# $(INSTALL) -D -m 644 $(DOCFILES) $(DESTDIR)$(docdir)
++ ifeq ($(HAVE_SYSTEMD),yes)
++ 	$(INSTALL) -d -m 0755 $(DESTDIR)$(systemduserunitdir) $(DESTDIR)$(systemdsystemunitdir)
++ ifeq ($(RHEL),1)
+
+Property changes on: files/patch-Makefile.in
+___________________________________________________________________
+Added: fbsd:nokeywords
+## -0,0 +1 ##
++yes
+\ No newline at end of property
+Added: svn:eol-style
+## -0,0 +1 ##
++native
+\ No newline at end of property
+Added: svn:mime-type
+## -0,0 +1 ##
++text/plain
+\ No newline at end of property
+Index: pkg-descr
+===================================================================
+--- pkg-descr	(revision 515311)
++++ pkg-descr	(working copy)
+@@ -12,4 +12,4 @@
+     While local changes are uploaded right away, remote changes are delayed
+     No GUI
+ 
+-WWW: https://github.com/skilion/onedrive
++WWW: https://github.com/abraunegg/onedrive
+Index: pkg-plist
+===================================================================
+--- pkg-plist	(revision 515311)
++++ pkg-plist	(working copy)
+@@ -4,7 +4,11 @@
+ %%BASH%%share/bash-completion/completions/onedrive
+ %%ZSH%%share/zsh/site-functions/_onedrive
+ %%PORTDOCS%%%%DOCSDIR%%/CHANGELOG.md
+-%%PORTDOCS%%%%DOCSDIR%%/README.Office365.md
++%%PORTDOCS%%%%DOCSDIR%%/Docker.md
++%%PORTDOCS%%%%DOCSDIR%%/INSTALL.md
++%%PORTDOCS%%%%DOCSDIR%%/LICENSE
++%%PORTDOCS%%%%DOCSDIR%%/Office365.md
+ %%PORTDOCS%%%%DOCSDIR%%/README.md
++%%PORTDOCS%%%%DOCSDIR%%/USAGE.md
+ %%PORTDOCS%%%%DOCSDIR%%/config
+ @dir /var/log/onedrive
