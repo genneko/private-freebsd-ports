@@ -7,7 +7,8 @@ Full of bad practices such as running 'npm install'.
 
 ## editors/omegaT4
 An easy port of [OmegaT](https://omegat.org/) - a free translation memory tool (version 4.x).  
-Unlike the official port, this port just downloads and installs the JAR instead of building the program from its source.
+Unlike the official port, this port just installs the cross-platform JAR instead of building the program from its source.  
+The JAR itself should be manually downloaded and put in DISTDIR.
 
 ## editors/omegaT5
 OmegaT Version 5.x. The same as above except the version.
