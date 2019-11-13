@@ -1,11 +1,10 @@
 # $FreeBSD: head/editors/omegaT/Makefile 432773 2017-01-29 16:17:56Z rodrigo $
 
 PORTNAME=	omegaT4
-DISTVERSION=	4.3.0
+DISTVERSION=	4.3.1
 CATEGORIES=	editors java x11
-MASTER_SITES=	SF/${PORTNAME:tl}/OmegaT%20-%20Standard/OmegaT%20${DISTVERSION}/
+MASTER_SITES=	# fetch manually
 DISTNAME=	OmegaT_${DISTVERSION}_Without_JRE
-DIST_SUBDIR=	${PORTNAME}
 
 MAINTAINER=	rodrigo@FreeBSD.org
 COMMENT=	Powerful translation memory application written in Java
@@ -27,9 +26,16 @@ DESKTOP_ENTRIES="OmegaT4" "Translation memory application" \
 		"omegaT4" "Office;WordProcessor;Java;" \
 		false
 
+.include <bsd.port.pre.mk>
+
+.if !exists(${DISTDIR}/${DISTNAME}${EXTRACT_SUFX})
+IGNORE=		Please visit https://omegat.org/ja/download and download ${DISTFILES} into ${DISTDIR}
+.endif
+
 do-install:
 	@${MKDIR} ${STAGEDIR}${DATADIR}
 	@cd ${WRKSRC} && ${COPYTREE_SHARE} . ${STAGEDIR}${DATADIR}
 	${INSTALL_SCRIPT} ${WRKDIR}/omegaT.sh ${STAGEDIR}${PREFIX}/bin/${PORTNAME}
+
 
 .include <bsd.port.mk>
