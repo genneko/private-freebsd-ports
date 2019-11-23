@@ -38,7 +38,8 @@ post-extract:
 		${LN} -fs /usr/local/bin/electron ${WRKSRC}/ElectronClient/app/node_modules/.bin/electron
 
 do-build:
-	@cd ${WRKSRC} && npm install && cd Tools && npm install && \
+	@cd ${WRKSRC} && export HUSKY_SKIP_INSTALL=1 && \
+		npm install && cd Tools && npm install && \
 		cd ../ElectronClient/app && \
 		rsync --delete -av ../../ReactNativeClient/lib/ lib/ && \
 		npm install --python=python2.7
