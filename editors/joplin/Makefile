@@ -41,9 +41,7 @@ do-build:
 	@cd ${WRKSRC} && npm install && cd Tools && npm install && \
 		cd ../ElectronClient/app && \
 		rsync --delete -av ../../ReactNativeClient/lib/ lib/ && \
-		${LN} -fs /usr/local/bin/python2.7 ${WRKDIR}/python && \
-		PATH=${WRKDIR}:${PATH} && \
-		npm install
+		npm install --python=python2.7
 
 do-install:
 	@${MKDIR} ${STAGEDIR}${DATADIR}
