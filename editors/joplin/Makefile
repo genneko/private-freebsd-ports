@@ -2,7 +2,7 @@
 
 PORTNAME=	joplin
 DISTVERSIONPREFIX=	v
-DISTVERSION=	1.0.169
+DISTVERSION=	1.0.174
 CATEGORIES=	editors
 
 MAINTAINER=	genneko
@@ -14,9 +14,8 @@ LIB_DEPENDS=
 BUILD_DEPENDS=	electron:devel/electron4 \
 		node:www/node8 \
 		npm:www/npm-node8 \
-		vips:graphics/vips \
 		rsync:net/rsync
-RUN_DEPENDS=	${LOCALBASE}/bin/electron:devel/electron4
+RUN_DEPENDS=	electron:devel/electron4
 
 OPTIONS_DEFINE=	PROXY
 PROXY_EXTRA_PATCHES=	${PATCHDIR}/proxy-patches
@@ -34,15 +33,16 @@ DESKTOP_ENTRIES="Joplin Desktop(Ports)" "Note-taking application" \
 		"joplin-desktop" "Office;WordProcessor;" \
 		false
 
+post-extract:
+	${MKDIR} -p ${WRKSRC}/ElectronClient/app/node_modules/.bin && \
+		${LN} -fs /usr/local/bin/electron ${WRKSRC}/ElectronClient/app/node_modules/.bin/electron
+
 do-build:
 	@cd ${WRKSRC} && npm install && cd Tools && npm install && \
 		cd ../ElectronClient/app && \
-		rsync --delete -a ../../ReactNativeClient/lib/ lib/ && \
+		rsync --delete -av ../../ReactNativeClient/lib/ lib/ && \
 		${LN} -fs /usr/local/bin/python2.7 ${WRKDIR}/python && \
-		export PATH=${WRKDIR}:${PATH} && \
-		${ECHO_MSG} "===>  Switching to root credentials to install node-gyp globally"; \
-		(${SU_CMD} "npm install -g node-gyp" ) && \
-		${ECHO_MSG} "===>  Returning to user credentials" ; \
+		PATH=${WRKDIR}:${PATH} && \
 		npm install
 
 do-install:
