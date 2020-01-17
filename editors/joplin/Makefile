@@ -2,7 +2,7 @@
 
 PORTNAME=	joplin
 DISTVERSIONPREFIX=	v
-DISTVERSION=	1.0.174
+DISTVERSION=	1.0.177
 CATEGORIES=	editors
 
 MAINTAINER=	genneko
@@ -11,16 +11,16 @@ COMMENT=	a note taking and to-do application with synchronization capabilities
 LICENSE=	MIT
 
 LIB_DEPENDS=	
-BUILD_DEPENDS=	electron:devel/electron4 \
-		node:www/node8 \
-		npm:www/npm-node8 \
+BUILD_DEPENDS=	electron:devel/electron6 \
+		node:www/node10 \
+		npm:www/npm-node10 \
 		rsync:net/rsync
-RUN_DEPENDS=	electron:devel/electron4
+RUN_DEPENDS=	electron:devel/electron6
 
 OPTIONS_DEFINE=	PROXY
 PROXY_EXTRA_PATCHES=	${PATCHDIR}/proxy-patches
 
-USES=		pkgconfig python:2.7,build
+USES=		python:3.7,build
 USE_GITHUB=	yes
 GH_ACCOUNT=	laurent22
 
@@ -40,9 +40,11 @@ post-extract:
 do-build:
 	@cd ${WRKSRC} && export HUSKY_SKIP_INSTALL=1 && \
 		npm install && cd Tools && npm install && \
-		cd ../ElectronClient/app && \
-		rsync --delete -av ../../ReactNativeClient/lib/ lib/ && \
-		npm install --python=python2.7
+		cd .. && \
+		npm run copyLib && \
+		npm run tsc && \
+		cd ElectronClient/app && \
+		npm install
 
 do-install:
 	@${MKDIR} ${STAGEDIR}${DATADIR}

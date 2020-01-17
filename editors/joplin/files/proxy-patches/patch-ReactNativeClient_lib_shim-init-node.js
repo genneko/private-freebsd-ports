@@ -1,4 +1,4 @@
---- ReactNativeClient/lib/shim-init-node.js.orig	2019-09-27 18:02:09 UTC
+--- ReactNativeClient/lib/shim-init-node.js.orig	2019-12-30 14:11:34 UTC
 +++ ReactNativeClient/lib/shim-init-node.js
 @@ -6,9 +6,11 @@ const { setLocale, defaultLocale, closestSupportedLoca
  const { FsDriverNode } = require('lib/fs-driver-node.js');
@@ -12,7 +12,7 @@
  
  function shimInit() {
  	shim.fsDriver = () => {
-@@ -244,10 +246,27 @@ function shimInit() {
+@@ -243,10 +245,27 @@ function shimInit() {
  		return new Buffer(data).toString('base64');
  	};
  
@@ -40,7 +40,7 @@
  		return shim.fetchWithRetry(() => {
  			return nodeFetch(url, options);
  		}, options);
-@@ -281,7 +300,7 @@ function shimInit() {
+@@ -280,7 +299,7 @@ function shimInit() {
  			};
  		}
  
@@ -49,7 +49,7 @@
  			protocol: url.protocol,
  			host: url.hostname,
  			port: url.port,
-@@ -289,6 +308,8 @@ function shimInit() {
+@@ -288,6 +307,8 @@ function shimInit() {
  			path: url.pathname + (url.query ? `?${url.query}` : ''),
  			headers: headers,
  		};

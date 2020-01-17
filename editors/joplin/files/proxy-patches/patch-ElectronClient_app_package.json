@@ -1,10 +1,10 @@
---- ElectronClient/app/package.json.orig	2019-10-01 07:14:30 UTC
+--- ElectronClient/app/package.json.orig	2019-12-30 14:11:34 UTC
 +++ ElectronClient/app/package.json
-@@ -103,6 +103,7 @@
-     "highlight.js": "^9.15.6",
+@@ -104,6 +104,7 @@
+     "fs-extra": "^5.0.0",
      "html-entities": "^1.2.1",
      "html-minifier": "^4.0.0",
 +    "https-proxy-agent": "^2.2.1",
      "image-type": "^3.0.0",
-     "joplin-turndown": "^4.0.17",
-     "joplin-turndown-plugin-gfm": "^1.0.9",
+     "joplin-renderer": "^1.0.5",
+     "joplin-turndown": "^4.0.19",

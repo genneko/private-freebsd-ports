@@ -1,10 +1,15 @@
---- ElectronClient/app/package.json.orig	2019-11-12 17:56:59 UTC
+--- ElectronClient/app/package.json.orig	2019-12-14 01:28:50 UTC
 +++ ElectronClient/app/package.json
-@@ -73,7 +73,6 @@
+@@ -74,11 +74,11 @@
      "app-builder-bin": "^1.9.11",
      "babel-cli": "^6.26.0",
      "babel-preset-react": "^6.24.1",
--    "electron": "^4.1.4",
-     "electron-builder": "20.38.5",
-     "electron-rebuild": "^1.8.5"
+-    "electron": "^7.1.5",
+     "electron-builder": "^21.2.0",
+     "electron-rebuild": "^1.8.8"
    },
+   "optionalDependencies": {
++    "electron": "^7.1.5",
+     "7zip-bin-linux": "^1.0.1",
+     "7zip-bin-mac": "^1.0.1",
+     "7zip-bin-win": "^2.1.1"
