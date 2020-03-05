@@ -1,10 +1,6 @@
 # private-freebsd-ports
 Original or modified FreeBSD ports for private use
 
-## editors/joplin
-[WIP] An extremely rough port of [Joplin](https://joplinapp.org/) - an open-source note taking application.  
-Full of bad practices such as running 'npm install'.
-
 ## editors/omegaT4
 An easy port of [OmegaT](https://omegat.org/) - a free translation memory tool (version 4.x).  
 Unlike the official port, this port just installs the cross-platform JAR instead of building the program from its source.  

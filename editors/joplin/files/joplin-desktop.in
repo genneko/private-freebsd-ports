@@ -1,7 +1,0 @@
-#!/bin/sh
-# $FreeBSD$
-#
-# joplin-desktop - launcher script for self-built Joplin desktop application
-#
-
-electron %%DATADIR%%/ElectronClient/app > /dev/null 2>&1
