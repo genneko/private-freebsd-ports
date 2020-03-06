@@ -1,5 +1,11 @@
 # private-freebsd-ports
-Original or modified FreeBSD ports for private use
+Original or modified FreeBSD ports by a novice porter.  
+Only meant for private use.
+
+## deskutils/joplin-desktop
+[Joplin Desktop Application](https://joplinapp.org) - an open source note taking and to-do application with synchronization capabilities.  
+This private port was manually imported from [tagattie/freebsd-ports](https://github.com/tagattie/freebsd-ports/tree/master/deskutils/joplin-desktop) and it's one of the sample ports for the [article on how to port Electron-based app to FreeBSD](https://blog.c6h12o6.org/post/freebsd-electron-app/) by the same author.  
+I've been trying to update it for learning purposes.
 
 ## editors/omegaT4
 An easy port of [OmegaT](https://omegat.org/) - a free translation memory tool (version 4.x).  
