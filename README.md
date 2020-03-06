@@ -9,7 +9,7 @@ The JAR itself should be manually downloaded and put in DISTDIR.
 ## editors/omegaT5
 OmegaT Version 5.x. The same as above except the version.
 
-## patches
+## _patches
 Private patches for the official ports.
 
 ### gettext-tools-x.x.x.diff
