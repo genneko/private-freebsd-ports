@@ -51,7 +51,3 @@ for d in "" ElectronClient ReactNativeClient; do
 	cp -v package.json package-lock.json "$targetdir/$d"
 done
 
-cd "$targetdir"
-git -C "$joplin_srcdir" diff electron_freebsd upstream/master ElectronClient/package.json | patch
-rm ElectronClient/package.json.orig
-
