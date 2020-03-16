@@ -3,8 +3,8 @@
 #
 prog=$(basename $0)
 bindir=$(dirname $(readlink -f $0))
-basedir=$(readlink -f $bindir/..)
 portsdir=${PORTSDIR:-/usr/ports}
+electrondir=${1:-$HOME/src/FreeBSD-Electron}
 sudo=""
 
 perr() {
@@ -21,6 +21,8 @@ if [ -d "$portsdir" ]; then
 else
 	perr "[CRITICAL] $portsdir doesn't exist. Get it now."
 	perr "portsnap fetch extract"
+	perr "or"
+	perr "svn checkout https://svn.freebsd.org/ports/head /usr/ports"
 	exit 1
 fi
 
@@ -29,15 +31,17 @@ if [ -d "$portsdir/devel/electron7" ]; then
 else
 	perr "[CRITICAL] $portsdir/devel/electron7 doesn't exist. Get it now."
 	perr "portsnap fetch update"
+	perr "or"
+	perr "svn update /usr/ports"
 	exit 1
 fi
 
-cd "$basedir/Mk/Uses"
+cd "$electrondir/Mk/Uses"
 for mk in *.mk; do
 	if [ -f "$portsdir/Mk/Uses/$mk" ]; then
 		perr "[INFO] $portsdir/Mk/Uses/$mk already exists."
 	else
-		$sudo ln -s "$basedir/Mk/Uses/$mk" $portsdir/Mk/Uses \
+		$sudo ln -s "$electrondir/Mk/Uses/$mk" $portsdir/Mk/Uses \
 		&& perr "[NOTICE] Created a link $portsdir/Mk/Uses/$mk" \
 		|| perr "[ERROR] Failed to created $portsdir/Mk/Uses/$mk"
 	fi
