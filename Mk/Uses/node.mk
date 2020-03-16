@@ -59,7 +59,7 @@
 #		NOTE: If the port specifies none of them, we assume the port
 #		requires the package manager at build time only.
 #
-#  Features:
+#   Features:
 #
 #	prefetch:	Downloads node modules the port uses according to the
 #			pre-stored package.json (and package-lock.json or
@@ -249,6 +249,9 @@ IGNORE= does not specify timestamp for pre-fetched modules
 
 FETCH_DEPENDS+= ${NODE_PKG_MANAGER}:${${NODE_PKG_MANAGER:tu}_PORTDIR}
 _USES_fetch+=	490:node-fetch-node-modules
+.endif # _FEATURE_NODE_PREFETCH
+
+###
 .   if ${NODE_PKG_MANAGER} == npm
 node-fetch-node-modules:
 	@${MKDIR} ${DISTDIR}/${DIST_SUBDIR}
@@ -299,11 +302,19 @@ node-fetch-node-modules:
 		${RM} -r ${WRKDIR}; \
 	fi
 .   endif
-.endif # _FEATURE_NODE_PREFETCH
+###
 
 .if defined(_NODE_FEATURE_EXTRACT)
 .   if ${NODE_PKG_MANAGER} == npm
 _USES_extract+=	900:node-install-node-modules
+.   elif ${NODE_PKG_MANAGER} == yarn
+EXTRACT_DEPENDS+= ${NODE_PKG_MANAGER}:${${NODE_PKG_MANAGER:tu}_PORTDIR}
+_USES_extract+=	900:node-install-node-modules
+.   endif
+.endif # _NODE_FEATURE_EXTRACT
+
+###
+.   if ${NODE_PKG_MANAGER} == npm
 node-install-node-modules:
 	@${ECHO_MSG} "===>  Copying package.json and package-lock.json to WRKSRC"
 	@cd ${PKGJSONSDIR} && \
@@ -321,8 +332,6 @@ node-install-node-modules:
 		${MV} ${WRKDIR}/npm-cache/$${dir}/node_modules ${WRKSRC}/$${dir}; \
 	done
 .   elif ${NODE_PKG_MANAGER} == yarn
-EXTRACT_DEPENDS+= ${NODE_PKG_MANAGER}:${${NODE_PKG_MANAGER:tu}_PORTDIR}
-_USES_extract+=	900:node-install-node-modules
 node-install-node-modules:
 	@${ECHO_MSG} "===>  Copying package.json and yarn.lock to WRKSRC"
 	@cd ${PKGJSONSDIR} && \
@@ -342,7 +351,7 @@ node-install-node-modules:
 			${YARN_CMD} --frozen-lockfile --ignore-scripts --offline; \
 	done
 .   endif
-.endif # _NODE_FEATURE_EXTRACT
+###
 
 .if defined(_NODE_FEATURE_PREBUILD)
 BUILD_DEPENDS+= ${NODE_PKG_MANAGER}:${${NODE_PKG_MANAGER:tu}_PORTDIR}
@@ -351,6 +360,9 @@ BUILD_DEPENDS+=	npm:${NPM_PORTDIR}	# npm is needed for node-gyp
 .   endif
 
 _USES_build+=	291:rebuild-native-node-modules
+.endif # _NODE_FEATURE_PREBUILD
+
+###
 rebuild-native-node-modules:
 	@${ECHO_MSG} "===>  Rebuilding native node modules"
 	@cd ${PKGJSONSDIR} && \
@@ -359,6 +371,6 @@ rebuild-native-node-modules:
 		npm_config_nodedir=${LOCALBASE} \
 		${NPM_CMD} rebuild --no-progress; \
 	done
+###
 
-.endif # _NODE_FEATURE_PREBUILD
 .endif # _INCLUDE_USES_NODE_MK

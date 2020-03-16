@@ -188,99 +188,15 @@ IGNORE= does not specify timestamp for pre-fetched modules
 .   endif
 
 FETCH_DEPENDS+= ${NODE_PKG_MANAGER}:${${NODE_PKG_MANAGER:tu}_PORTDIR}
-_USES_fetch+=	490:electron-fetch-node-modules
-.   if ${NODE_PKG_MANAGER} == npm
-electron-fetch-node-modules:
-	@${MKDIR} ${DISTDIR}/${DIST_SUBDIR}
-	@if [ ! -f ${DISTDIR}/${DIST_SUBDIR}/${_DISTFILE_prefetch} ]; then \
-		${ECHO_MSG} "===>  Pre-fetching and archiving node modules"; \
-		${MKDIR} ${WRKDIR}/npm-cache; \
-		${CP} -r ${PKGJSONSDIR}/* ${WRKDIR}/npm-cache; \
-		cd ${PKGJSONSDIR} && \
-		for dir in `${FIND} . -type f -name package.json -exec dirname {} ';'`; do \
-			cd ${WRKDIR}/npm-cache/$${dir} && \
-			${SETENV} HOME=${WRKDIR} ${NPM_CMD} ci --ignore-scripts --no-progress && \
-			${RM} package.json package-lock.json; \
-		done; \
-		cd ${WRKDIR} && \
-		${MTREE_CMD} -cbnSp npm-cache | ${MTREE_CMD} -C | ${SED} \
-			-e 's:time=[0-9.]*:time=${PREFETCH_TIMESTAMP}.000000000:' \
-			-e 's:\([gu]id\)=[0-9]*:\1=0:g' \
-			-e 's:flags=.*:flags=none:' \
-			-e 's:^\.:./npm-cache:' > npm-cache.mtree && \
-		${TAR} -cz --options 'gzip:!timestamp' \
-			-f ${DISTDIR}/${DIST_SUBDIR}/${_DISTFILE_prefetch} @npm-cache.mtree; \
-		${RM} -r ${WRKDIR}; \
-	fi
-.   elif ${NODE_PKG_MANAGER} == yarn
-electron-fetch-node-modules:
-	@${MKDIR} ${DISTDIR}/${DIST_SUBDIR}
-	@if [ ! -f ${DISTDIR}/${DIST_SUBDIR}/${_DISTFILE_prefetch} ]; then \
-		${ECHO_MSG} "===>  Pre-fetching and archiving node modules"; \
-		${MKDIR} ${WRKDIR}; \
-		${ECHO_CMD} 'yarn-offline-mirror "./yarn-offline-cache"' >> \
-			${WRKDIR}/.yarnrc; \
-		${CP} -r ${PKGJSONSDIR}/* ${WRKDIR}; \
-		cd ${PKGJSONSDIR} && \
-		for dir in `${FIND} . -type f -name package.json -exec dirname {} ';'`; do \
-			cd ${WRKDIR}/$${dir} && \
-			${SETENV} HOME=${WRKDIR} XDG_CACHE_HOME=${WRKDIR}/.cache \
-				${YARN_CMD} --frozen-lockfile --ignore-scripts && \
-			${RM} package.json yarn.lock; \
-		done; \
-		cd ${WRKDIR}; \
-		${MTREE_CMD} -cbnSp yarn-offline-cache | ${MTREE_CMD} -C | ${SED} \
-			-e 's:time=[0-9.]*:time=${PREFETCH_TIMESTAMP}.000000000:' \
-			-e 's:\([gu]id\)=[0-9]*:\1=0:g' \
-			-e 's:flags=.*:flags=none:' \
-			-e 's:^\.:./yarn-offline-cache:' > yarn-offline-cache.mtree; \
-		${TAR} -cz --options 'gzip:!timestamp' \
-			-f ${DISTDIR}/${DIST_SUBDIR}/${_DISTFILE_prefetch} @yarn-offline-cache.mtree; \
-		${RM} -r ${WRKDIR}; \
-	fi
-.   endif
+_USES_fetch+=	490:node-fetch-node-modules
 .endif # _FEATURE_ELECTRON_PREFETCH
 
 .if defined(_ELECTRON_FEATURE_EXTRACT)
 .   if ${NODE_PKG_MANAGER} == npm
-_USES_extract+=	900:electron-install-node-modules
-electron-install-node-modules:
-	@${ECHO_MSG} "===>  Copying package.json and package-lock.json to WRKSRC"
-	@cd ${PKGJSONSDIR} && \
-	for dir in `${FIND} . -type f -name package.json -exec dirname {} ';'`; do \
-		for f in package.json package-lock.json; do \
-			if [ -f ${WRKSRC}/$${dir}/$${f} ]; then \
-				${MV} -f ${WRKSRC}/$${dir}/$${f} ${WRKSRC}/$${dir}/$${f}.bak; \
-			fi; \
-			${CP} -f $${dir}/$${f} ${WRKSRC}/$${dir}; \
-		done; \
-	done
-	@${ECHO_MSG} "===>  Moving pre-fetched node modules to WRKSRC"
-	@cd ${PKGJSONSDIR} && \
-	for dir in `${FIND} . -type f -name package.json -exec dirname {} ';'`; do \
-		${MV} ${WRKDIR}/npm-cache/$${dir}/node_modules ${WRKSRC}/$${dir}; \
-	done
+_USES_extract+=	900:node-install-node-modules
 .   elif ${NODE_PKG_MANAGER} == yarn
 EXTRACT_DEPENDS+= ${NODE_PKG_MANAGER}:${${NODE_PKG_MANAGER:tu}_PORTDIR}
-_USES_extract+=	900:electron-install-node-modules
-electron-install-node-modules:
-	@${ECHO_MSG} "===>  Copying package.json and yarn.lock to WRKSRC"
-	@cd ${PKGJSONSDIR} && \
-	for dir in `${FIND} . -type f -name package.json -exec dirname {} ';'`; do \
-		for f in package.json yarn.lock; do \
-			if [ -f ${WRKSRC}/$${dir}/$${f} ]; then \
-				${MV} -f ${WRKSRC}/$${dir}/$${f} ${WRKSRC}/$${dir}/$${f}.bak; \
-			fi; \
-			${CP} -f $${dir}/$${f} ${WRKSRC}/$${dir}; \
-		done; \
-	done
-	@${ECHO_MSG} "===>  Installing node modules from pre-fetched cache"
-	@${ECHO_CMD} 'yarn-offline-mirror "../yarn-offline-cache"' >> ${WRKSRC}/.yarnrc
-	@cd ${PKGJSONSDIR} && \
-	for dir in `${FIND} . -type f -name package.json -exec dirname {} ';'`; do \
-		cd ${WRKSRC}/$${dir} && ${SETENV} HOME=${WRKDIR} XDG_CACHE_HOME=${WRKDIR}/.cache \
-			${YARN_CMD} --frozen-lockfile --ignore-scripts --offline; \
-	done
+_USES_extract+=	900:node-install-node-modules
 .   endif
 .endif # _ELECTRON_FEATURE_EXTRACT
 
@@ -301,7 +217,7 @@ IGNORE=	does not specify the electron version used in the upstream source. Pleas
 
 _USES_build+=	290:electron-generate-electron-zip \
 		290:electron-generate-chromedriver-zip \
-		291:electron-rebuild-native-node-modules-for-node \
+		291:rebuild-native-node-modules \
 		490:electron-rebuild-native-node-modules-for-electron
 electron-generate-electron-zip:
 .   if !defined(_ELECTRON_FEATURE_BUILD) || \
@@ -359,15 +275,6 @@ electron-generate-chromedriver-zip:
 .   else
 	@${DO_NADA}
 .   endif
-
-electron-rebuild-native-node-modules-for-node:
-	@${ECHO_MSG} "===>  Rebuilding native node modules for node"
-	@cd ${PKGJSONSDIR} && \
-	for dir in `${FIND} . -type f -name package.json -exec dirname {} ';'`; do \
-		cd ${WRKSRC}/$${dir} && ${SETENV} ${MAKE_ENV} \
-		npm_config_nodedir=${LOCALBASE} \
-		${NPM_CMD} rebuild --no-progress; \
-	done
 
 electron-rebuild-native-node-modules-for-electron:
 	@${ECHO_MSG} "===>  Rebuilding native node modules for electron"
