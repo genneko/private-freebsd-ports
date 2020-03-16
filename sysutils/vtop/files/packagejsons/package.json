@@ -1,0 +1,31 @@
+{
+  "name": "vtop",
+  "version": "0.1.8",
+  "description": "Wow such top. So stats",
+  "homepage": "http://parall.ax/vtop",
+  "main": "run.js",
+  "preferGlobal": true,
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "bin": {
+    "vtop": "./bin/vtop.js"
+  },
+  "author": {
+    "name": "James Hall",
+    "email": "james@parall.ax"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:MrRio/vtop.git"
+  },
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "dependencies": {
+    "drawille": "0.0.3",
+    "os-utils": "0.0.14",
+    "read": "1.0.5",
+    "blessed": "0.0.33",
+    "commander": "2.2.0"
+  }
+}
