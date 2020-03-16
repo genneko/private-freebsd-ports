@@ -7,6 +7,11 @@ Only meant for private use.
 This private port was manually imported from [tagattie/freebsd-ports](https://github.com/tagattie/freebsd-ports/tree/master/deskutils/joplin-desktop) and it's one of the sample ports for the [article on how to port Electron-based app to FreeBSD](https://blog.c6h12o6.org/post/freebsd-electron-app/) by the same author.  
 I've been trying to update it for learning purposes.
 
+This port requires the [helper makefiles](https://github.com/tagattie/FreeBSD-Electron/tree/master/Mk/Uses).
+
+## deskutils/joplin-terminal
+A terminal (TUI/CLI) version of the above mentioned Joplin - a note taking application.  
+
 ## editors/omegaT4
 An easy port of [OmegaT](https://omegat.org/) - a free translation memory tool (version 4.x).  
 Unlike the official port, this port just installs the cross-platform JAR instead of building the program from its source.  

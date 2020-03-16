@@ -5,7 +5,7 @@ DISTVERSION=	0.1.8
 CATEGORIES=	sysutils
 
 MAINTAINER=	genneko217@gmail.com
-COMMENT=	Wow such top. So stats. More better than regular top.
+COMMENT=	Free and open source activity monitor for the command line
 
 LICENSE=	MIT
 LICENSE_FILE=	${WRKSRC}/LICENSE
