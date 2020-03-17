@@ -8,6 +8,4 @@
 *.rej
 *.orig
 *.sw[p-z]
-/devel
-/net
-/net-im
+.svn
