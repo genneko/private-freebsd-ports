@@ -5,12 +5,14 @@ Only meant for private use.
 ## deskutils/joplin-desktop
 [Joplin Desktop Application](https://joplinapp.org) - an open source note taking and to-do application with synchronization capabilities.  
 This private port was manually imported from [tagattie/freebsd-ports](https://github.com/tagattie/freebsd-ports/tree/master/deskutils/joplin-desktop) and it's one of the sample ports for the [article on how to port Electron-based app to FreeBSD](https://blog.c6h12o6.org/post/freebsd-electron-app/) by the same author.  
-I've been trying to update it for learning purposes.
+This port requires the [helper makefiles](https://github.com/tagattie/FreeBSD-Electron/tree/master/Mk/Uses) also by the same author.
 
-This port requires the [helper makefiles](https://github.com/tagattie/FreeBSD-Electron/tree/master/Mk/Uses).
+I've been trying to update it for learning purposes.
 
 ## deskutils/joplin-terminal
 A terminal (TUI/CLI) version of the above mentioned Joplin - a note taking application.  
+
+This port also requires the [helper makefiles](https://github.com/genneko/FreeBSD-Electron/tree/helpers_for_nodeapps/Mk/Uses), but this time they are my modified versions for supporting node-only apps.
 
 ## editors/omegaT4
 An easy port of [OmegaT](https://omegat.org/) - a free translation memory tool (version 4.x).  
@@ -19,6 +21,10 @@ The JAR itself should be manually downloaded and put in DISTDIR.
 
 ## editors/omegaT5
 OmegaT Version 5.x. The same as above except the version.
+
+## sysutils/vtop
+An activity monitor for the command line.  
+This is my first complete port using the modified [helper makefiles](https://github.com/genneko/FreeBSD-Electron/tree/helpers_for_nodeapps/Mk/Uses) for node applications.
 
 ## _patches
 Private patches for the official ports.
