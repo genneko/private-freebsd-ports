@@ -25,7 +25,11 @@ OmegaT Version 5.x. The same as above except the version.
 
 ### sysutils/vtop
 An activity monitor for the command line.  
-This is my first complete port using the modified [helper makefiles](https://github.com/genneko/FreeBSD-Electron/tree/helpers_for_nodeapps/Mk/Uses) for node applications.
+This is my first complete port using the modified [Mk/Uses/node.mk](https://github.com/genneko/FreeBSD-Electron/tree/helpers_for_nodeapps/Mk/Uses) for node applications.
+
+### www/gh-home
+A command-line utility to open the GitHub page of the given or current directory repo.  
+This also utilizes the modified [Mk/Uses/node.mk](https://github.com/genneko/FreeBSD-Electron/tree/helpers_for_nodeapps/Mk/Uses).
 
 ## Modified Ports
 Private patches for the official ports.

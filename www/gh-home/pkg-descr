@@ -1,0 +1,7 @@
+gh-home is a command-line app to quickly open the GitHub page
+of the given or current directory repo.
+
+It will attempt to open the upstream repo if there is one
+or the forked repo.
+
+WWW: https://github.com/sindresorhus/gh-home
