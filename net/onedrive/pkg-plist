@@ -4,7 +4,11 @@ etc/logrotate.d/onedrive
 %%BASH%%share/bash-completion/completions/onedrive
 %%ZSH%%share/zsh/site-functions/_onedrive
 %%PORTDOCS%%%%DOCSDIR%%/CHANGELOG.md
-%%PORTDOCS%%%%DOCSDIR%%/README.Office365.md
+%%PORTDOCS%%%%DOCSDIR%%/Docker.md
+%%PORTDOCS%%%%DOCSDIR%%/INSTALL.md
+%%PORTDOCS%%%%DOCSDIR%%/LICENSE
+%%PORTDOCS%%%%DOCSDIR%%/Office365.md
 %%PORTDOCS%%%%DOCSDIR%%/README.md
+%%PORTDOCS%%%%DOCSDIR%%/USAGE.md
 %%PORTDOCS%%%%DOCSDIR%%/config
 @dir /var/log/onedrive

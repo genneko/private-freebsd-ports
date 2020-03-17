@@ -1,0 +1,33 @@
+--- Makefile.in.orig	2019-08-31 20:48:20 UTC
++++ Makefile.in
+@@ -67,6 +67,7 @@ endif
+ 
+ SOURCES = \
+ 	src/config.d \
++	src/freebsd_inotify.d \
+ 	src/itemdb.d \
+ 	src/log.d \
+ 	src/main.d \
+@@ -97,14 +98,16 @@ distclean: clean
+ 	      $(system_unit_files) $(user_unit_files)
+ 
+ onedrive: version $(SOURCES)
+-	$(DC) $(DCFLAGS) $(addprefix -L,$(curl_LIBS)) $(addprefix -L,$(sqlite_LIBS)) $(addprefix -L,$(notify_LIBS)) -L-ldl $(SOURCES) -of$@
++	$(DC) $(DCFLAGS) $(addprefix -L,$(curl_LIBS)) $(addprefix -L,$(sqlite_LIBS)) $(addprefix -L,$(notify_LIBS)) -L-ldl -L-linotify $(SOURCES) -of$@
+ 
+ install: all
+-	$(INSTALL) -D onedrive $(DESTDIR)$(bindir)/onedrive
+-	$(INSTALL) -D onedrive.1 $(DESTDIR)$(mandir)/man1/onedrive.1
+-	$(INSTALL) -D -m 644 contrib/logrotate/onedrive.logrotate $(DESTDIR)$(sysconfdir)/logrotate.d/onedrive
+-	mkdir -p $(DESTDIR)$(docdir)
+-	$(INSTALL) -D -m 644 $(DOCFILES) $(DESTDIR)$(docdir)
++	$(INSTALL) -s onedrive $(DESTDIR)$(bindir)/onedrive
++	#$(INSTALL) -D onedrive.1 $(DESTDIR)$(mandir)/man1/onedrive.1
++	$(INSTALL) -d -m 0775 $(DESTDIR)/var/log/onedrive
++	$(INSTALL) -d $(DESTDIR)$(sysconfdir)/logrotate.d
++	$(INSTALL) -m 644 contrib/logrotate/onedrive.logrotate $(DESTDIR)$(sysconfdir)/logrotate.d/onedrive
++	# mkdir -p $(DESTDIR)$(docdir)
++	# $(INSTALL) -D -m 644 $(DOCFILES) $(DESTDIR)$(docdir)
+ ifeq ($(HAVE_SYSTEMD),yes)
+ 	$(INSTALL) -d -m 0755 $(DESTDIR)$(systemduserunitdir) $(DESTDIR)$(systemdsystemunitdir)
+ ifeq ($(RHEL),1)
