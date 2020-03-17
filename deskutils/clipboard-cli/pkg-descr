@@ -1,0 +1,6 @@
+clipboard-cli is a cross-platform command-line clipboard
+(copy/paste) utility
+It supports macOS, Windows, Linux, OpenBSD, FreeBSD and
+Android with Termux.
+
+WWW: https://github.com/sindresorhus/clipboard-cli

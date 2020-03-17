@@ -15,6 +15,10 @@ A terminal (TUI/CLI) version of the above mentioned Joplin - a note taking appli
 
 This port also requires the [helper makefiles](https://github.com/genneko/FreeBSD-Electron/tree/helpers_for_nodeapps/Mk/Uses), but this time they are my modified versions for supporting node-only apps.
 
+### deskutils/clipboard-cli
+A cross-platform clipboard (copy/paste) utility for the command-line.  
+This also utilizes the modified [Mk/Uses/node.mk](https://github.com/genneko/FreeBSD-Electron/tree/helpers_for_nodeapps/Mk/Uses).
+
 ### editors/omegaT4
 An easy port of [OmegaT](https://omegat.org/) - a free translation memory tool (version 4.x).  
 Unlike the official port, this port just installs the cross-platform JAR instead of building the program from its source.  
