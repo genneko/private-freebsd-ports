@@ -10,9 +10,6 @@ COMMENT=	Free and open source activity monitor for the command line
 LICENSE=	MIT
 LICENSE_FILE=	${WRKSRC}/LICENSE
 
-#FETCH_DEPENDS=	git:devel/git
-#BUILD_DEPENDS=	rsync:net/rsync vips:graphics/vips
-
 USES=		localbase:ldflags node:12,build
 
 USE_GITHUB=	yes
@@ -29,7 +26,7 @@ USE_NODE=	npm prefetch extract prebuild
 PREFETCH_TIMESTAMP=	1584179315
 
 pre-build:
-	cd ${WRKSRC} && ${SETENV} ${MAKE_ENV} ${NPM_CMD} install
+	cd ${WRKSRC} && ${SETENV} ${MAKE_ENV} ${NPM_CMD} install --production
 
 do-install:
 	${INSTALL_SCRIPT} ${WRKDIR}/${PORTNAME} ${STAGEDIR}${PREFIX}/bin
