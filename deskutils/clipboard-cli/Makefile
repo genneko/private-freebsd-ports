@@ -21,7 +21,7 @@ SUB_FILES=	clipboard
 
 USE_NODE=	npm prefetch extract prebuild
 
-#RUN_DEPENDS=	xsel:x11/xsel-conrad
+RUN_DEPENDS=	xsel:x11/xsel-conrad
 
 PREFETCH_TIMESTAMP=	1584179315
 
