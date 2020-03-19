@@ -17,10 +17,6 @@ GH_ACCOUNT=	MrRio
 
 SUB_FILES=	${PORTNAME}${PKGNAMESUFFIX}
 
-PORTDOCS=	README.md
-
-OPTIONS_DEFINE=	DOCS
-
 USE_NODE=	npm prefetch extract prebuild
 
 PREFETCH_TIMESTAMP=	1584179315
@@ -33,9 +29,5 @@ do-install:
 	${MKDIR} ${STAGEDIR}${DATADIR}
 	cd ${WRKSRC} && \
 		${COPYTREE_SHARE} . ${STAGEDIR}${DATADIR}
-
-do-install-DOCS-on:
-	${MKDIR} ${STAGEDIR}${DOCSDIR}
-	${INSTALL_MAN} ${PORTDOCS:S|^|${WRKSRC}/|} ${STAGEDIR}${DOCSDIR}
 
 .include <bsd.port.mk>
