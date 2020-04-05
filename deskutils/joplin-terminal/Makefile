@@ -1,8 +1,7 @@
 # $FreeBSD$
 
 PORTNAME=	joplin
-DISTVERSIONPREFIX=	v
-DISTVERSION=	1.0.193
+DISTVERSION=	1.0.162
 CATEGORIES=	deskutils
 PKGNAMESUFFIX=	-terminal
 
@@ -20,6 +19,7 @@ USES=		localbase:ldflags \
 
 USE_GITHUB=	yes
 GH_ACCOUNT=	laurent22
+GH_TAGNAME=	cli-v${DISTVERSION}
 
 BINARY_ALIAS=	python=${PYTHON_CMD}
 
