@@ -2,7 +2,7 @@
 
 PORTNAME=	joplin
 DISTVERSIONPREFIX=	v
-DISTVERSION=	1.0.193
+DISTVERSION=	1.0.201
 CATEGORIES=	deskutils
 PKGNAMESUFFIX=	-desktop
 
@@ -17,7 +17,7 @@ BUILD_DEPENDS=	app-builder:devel/app-builder \
 		rsync:net/rsync
 
 USES=		desktop-file-utils electron:7 gnome localbase:ldflags \
-		node:12,build python:2.7,build
+		node:12,build python:build
 
 USE_GITHUB=	yes
 GH_ACCOUNT=	laurent22
@@ -41,8 +41,8 @@ PREFETCH_TIMESTAMP=	1582702267
 BUILD_WRKSRC=	${WRKSRC}/ElectronClient
 
 pre-build:
+	cd ${WRKSRC} && ${SETENV} ${MAKE_ENV} ${NPM_CMD} install
 	cd ${BUILD_WRKSRC} && ${SETENV} ${MAKE_ENV} ${NPM_CMD} run build
-	cd ${WRKSRC} && ${SETENV} ${MAKE_ENV} ${NPM_CMD} run build
 
 do-install:
 	${INSTALL_SCRIPT} ${WRKDIR}/${PORTNAME}${PKGNAMESUFFIX} ${STAGEDIR}${PREFIX}/bin
